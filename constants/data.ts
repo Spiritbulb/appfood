@@ -1,0 +1,181 @@
+import icons from "./icons";
+import images from "./images";
+
+export const cards = [
+  {
+    title: "Card 1",
+    location: "Location 1",
+    price: "$100",
+    rating: 4.8,
+    category: "house",
+    image: images.newYork,
+  },
+  {
+    title: "Card 2",
+    location: "Location 2",
+    price: "$200",
+    rating: 3,
+    category: "house",
+    image: images.japan,
+  },
+  {
+    title: "Card 3",
+    location: "Location 3",
+    price: "$300",
+    rating: 2,
+    category: "flat",
+    image: images.newYork,
+  },
+  {
+    title: "Card 4",
+    location: "Location 4",
+    price: "$400",
+    rating: 5,
+    category: "villa",
+    image: images.japan,
+  },
+];
+
+export const featuredCards = [
+  {
+    title: "Featured 1",
+    location: "Location 1",
+    price: "$100",
+    rating: 4.8,
+    image: images.newYork,
+    category: "house",
+  },
+  {
+    title: "Featured 2",
+    location: "Location 2",
+    price: "$200",
+    rating: 3,
+    image: images.japan,
+    category: "flat",
+  },
+];
+
+export const categories = [
+  { title: "All", category: "All-1" },
+  { title: "Houses", category: "House-1" },
+  { title: "Condos", category: "Condos-1" },
+  { title: "Duplexes", category: "Duplexes-1" },
+  { title: "Studios", category: "Studios-1" },
+  { title: "Villas", category: "Villa-1" },
+  { title: "Apartments", category: "Apartments-1" },
+  { title: "Townhomes", category: "Townhomes-1" },
+  { title: "Others", category: "Others-1" },
+];
+
+export const settings = [
+  {
+    title: "My Orders",
+    icon: icons.calendar,
+    id: 1,
+    key: 1,
+  },
+  {
+    title: "Payments",
+    icon: icons.wallet,
+    id: 2,
+    key: 2,
+  },
+  {
+    title: "Profile",
+    icon: icons.person,
+    id: 3,
+    key: 3,
+  },
+  {
+    title: "Notifications",
+    icon: icons.bell,
+    id: 4,
+    key: 4,
+  },
+  {
+    title: "Security",
+    icon: icons.shield,
+    id: 5,
+    key: 5,
+  },
+  {
+    title: "Language",
+    icon: icons.language,
+    id: 6,
+    key: 6,
+  },
+  {
+    title: "Help Center",
+    icon: icons.info,
+    id: 7,
+    key: 7,
+  },
+  {
+    title: "Invite Friends",
+    icon: icons.people,
+    id: 8,
+    key: 8,
+  },
+];
+
+export const facilities = [
+  {
+    title: "Laundry",
+    icon: icons.laundry,
+  },
+  {
+    title: "Car Parking",
+    icon: icons.carPark,
+  },
+  {
+    title: "Sports Center",
+    icon: icons.run,
+  },
+  {
+    title: "Cutlery",
+    icon: icons.cutlery,
+  },
+  {
+    title: "Gym",
+    icon: icons.dumbell,
+  },
+  {
+    title: "Swimming pool",
+    icon: icons.swim,
+  },
+  {
+    title: "Wifi",
+    icon: icons.wifi,
+  },
+  {
+    title: "Pet Center",
+    icon: icons.dog,
+  },
+];
+
+export const gallery = [
+  {
+    id: 1,
+    image: images.newYork,
+  },
+  {
+    id: 2,
+    image: images.japan,
+  },
+  {
+    id: 3,
+    image: images.newYork,
+  },
+  {
+    id: 4,
+    image: images.japan,
+  },
+  {
+    id: 5,
+    image: images.newYork,
+  },
+  {
+    id: 6,
+    image: images.japan,
+  },
+];
