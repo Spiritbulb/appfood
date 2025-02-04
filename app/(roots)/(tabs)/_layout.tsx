@@ -25,7 +25,9 @@ const TabsLayout = () => {
           backgroundColor: "#500000",
           position: "absolute",
           borderTopColor:"#eab620",
+          justifyContent: 'center',
           borderTopWidth: 1,
+          paddingTop: 5,
           minHeight: 70,
         }
       }}

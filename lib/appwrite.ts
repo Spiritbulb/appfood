@@ -1,6 +1,6 @@
 import {Account, Avatars, Client, Databases, OAuthProvider, Query} from "react-native-appwrite";
 import * as Linking from 'expo-linking';
-import { useSearchParams } from "expo-router/build/hooks";
+import { useLocalSearchParams } from "expo-router/build/hooks";
 import * as AuthSession from 'expo-auth-session';
 import { openAuthSessionAsync } from "expo-web-browser";
 

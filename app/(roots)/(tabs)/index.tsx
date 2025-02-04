@@ -58,8 +58,8 @@ export default function Index () {
        
        numColumns={2}
        contentContainerClassName='pb-32'
-       contentContainerStyle={{ paddingBottom: 32, rowGap: 1 }} // Add space between rows
-       columnWrapperClassName='flex gap-5 px-5'
+       contentContainerStyle={{ paddingBottom: 80, rowGap: 1 }} // Add space between rows
+       columnWrapperClassName='flex gap-1 px-5'
        showsVerticalScrollIndicator={false}
        ListEmptyComponent={
         loading ? (
@@ -101,7 +101,7 @@ export default function Index () {
             data={LatestFooditems}
             renderItem={({item}) => <Cards item ={item} onPress={() => handleCardPress(item.$id)}/>}
             
-            horizontal
+            horizontal 
             bounces ={false}
             showsHorizontalScrollIndicator={false}
             contentContainerClassName='flex gap-5 mt-5'

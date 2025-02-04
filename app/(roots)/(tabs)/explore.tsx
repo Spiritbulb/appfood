@@ -18,13 +18,16 @@ import NoResults from "@/components/NoResults";
 
 import { getLatestFooditems } from "@/lib/appwrite";
 import { useAppwrite } from "@/lib/useAppwrite";
-import { Cards } from "@/components/cards";
+
 import images from "@/constants/images";
+import { Dimensions } from "react-native"; // Get screen width
+
+const { width } = Dimensions.get("window"); // Get full screen width
 
 const Explore = () => {
   const params = useLocalSearchParams<{ query?: string; filter?: string }>();
   const [page, setPage] = useState(1);
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<typeof properties>([]);
 
   const {
     data: properties,
@@ -50,11 +53,11 @@ const Explore = () => {
 
   useEffect(() => {
     if (properties && properties.length > 0) {
-      setItems((prev) => {
+      setItems( (prev) => {
         if (page === 1) {
           return properties; // Reset items on new search
         }
-        const newItems = properties.filter(
+        const newItems = (properties).filter(
           (item) => !prev.some((prevItem) => prevItem.$id === item.$id)
         );
         return [...prev, ...newItems]; // Append only new items
@@ -73,47 +76,37 @@ const Explore = () => {
 
   return (
     <SafeAreaView className="h-full bg-white">
-      <View className="h-20 bg-[#FFA500]">
-              <View className="flex-row justify-center items-center mt-6 px-4">
+      <View className="h-20 bg-[#500000]">
+              <View className="flex justify-center items-center mt-6 px-4">
                 <Image
                   source={images.icon}
-                  className="w-20 h-20 ml-1 rounded-lg"
-                  resizeMode="contain"
+                  className="w-20 h-10 ml-1 rounded-lg"
+                  resizeMode="cover"
                 />
               </View>
             </View>
       <View className="px-5">
-        <View className="flex flex-row items-center justify-between mt-5">
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="flex flex-row bg-primary-200 rounded-full size-11 items-center justify-center"
-          >
-            <Image source={icons.backArrow} className="size-5" />
-          </TouchableOpacity>
-
-          <Text className="text-base mr-2 text-center font-rubik-medium text-black-300">
-            Explore your Options
-          </Text>
-          <Image source={icons.bell} className="w-6 h-6" />
-        </View>
+        
         <Search />
-        <View className="mt-5">
-          <Text className="text-xl font-rubik-bold text-black-300 mt-5">
-            Found {items.length} Properties
-          </Text>
-        </View>
+        
       </View>
 
       <FlatList
         data={items}
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
-          <UserCards item={item} onPress={() => handleCardPress(item.$id)} />
+          <View style={{ width }}>
+            <UserCards item={item} onPress={() => handleCardPress(item.$id)} />
+          </View>
+          
         )}
         contentContainerClassName="pb-32"
+        horizontal
         pagingEnabled
+        
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
+        contentContainerStyle={{ paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           loading ? (
