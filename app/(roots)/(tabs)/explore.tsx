@@ -54,13 +54,14 @@ const Explore = () => {
   useEffect(() => {
     if (properties && properties.length > 0) {
       setItems((prev) => {
+        const previousItems = prev || []; // Provide a default empty array if prev is null
         if (page === 1) {
           return properties; // Reset items on new search
         }
-        const newItems = (properties).filter(
-          (item) => !prev.some((prevItem) => prevItem.$id === item.$id)
+        const newItems = properties.filter(
+          (item) => !previousItems.some((prevItem) => prevItem.$id === item.$id)
         );
-        return [...prev, ...newItems]; // Append only new items
+        return [...previousItems, ...newItems]; // Append only new items
       });
     }
   }, [properties, page]);
