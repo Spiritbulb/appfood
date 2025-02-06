@@ -19,7 +19,7 @@ interface SettingsItemProp {
   icon: ImageSourcePropType;
   title: string;
   id: number;
-  key: string;
+  key: number;
   onPress?: () => void;
   textStyle?: string;
   showArrow?: boolean;
@@ -67,7 +67,7 @@ const Profile = () => {
         showsVerticalScrollIndicator={false}
         contentContainerClassName="pb-32 px-7"
       >
-        <View className="flex flex-row items-center justify-between mt-5">
+        <View className="flex flex-row items-center justify-between mt-8">
           <Text className="text-xl font-rubik-bold">Profile</Text>
           <Image source={icons.bell} className="size-5" />
         </View>
@@ -78,7 +78,7 @@ const Profile = () => {
               source={{ uri: user?.avatar }}
               className="size-44 relative rounded-full"
             />
-            <TouchableOpacity className="absolute bottom-11 right-2">
+            <TouchableOpacity className="absolute bottom-10 right-1">
               <Image source={icons.edit} className="size-9" />
             </TouchableOpacity>
 
@@ -88,15 +88,18 @@ const Profile = () => {
        
 
         <View className="flex flex-col mt-10">
-          <SettingsItem icon={icons.calendar} title="My Posts" id={1}  key={"4"}/>
-          <SettingsItem icon={icons.wallet} title="My Wallet" id={2} key={"3"}/>
+          <SettingsItem icon={icons.calendar} title="My Posts" id={1}  key={4}/>
+          <SettingsItem icon={icons.wallet} title="My Wallet" id={2} key={3}/>
         </View>
 
         <View className="flex flex-col mt-10">
-          <SettingsItem icon={icons.calendar} title="My Orders" id={3} key={"2"}/>
-          <SettingsItem icon={icons.wallet} title="Payments" id={4} key={"1"}/>
+          <SettingsItem icon={icons.calendar} title="My Orders" id={3} key={2}/>
+          <SettingsItem icon={icons.wallet} title="Payments" id={4} key={1}/>
           {settings.slice(3).map((items, index) => (
-            <SettingsItem key={"7"} {...items} />
+            <SettingsItem icon={items.icon}
+            title={items.title}
+            id={items.id}
+            key={items.key} />
           ))}
         </View>
 
@@ -107,7 +110,7 @@ const Profile = () => {
             title="Logout"
             textStyle="text-danger"
             showArrow={false}
-            onPress={handleLogout} id={0}  key={"5"}   />
+            onPress={handleLogout} id={0}  key={5}   />
         </View>
       </ScrollView>
     </SafeAreaView>
