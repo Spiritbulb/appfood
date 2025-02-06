@@ -12,7 +12,7 @@ import { router, useLocalSearchParams } from "expo-router";
 
 import icons from "@/constants/icons";
 import Search from "@/components/search";
-import { Cards, UserCards } from "@/components/cards";
+import { HomeCards } from "@/components/homecard";
 import Filters from "@/components/filter";
 import NoResults from "@/components/NoResults";
 
@@ -53,7 +53,7 @@ const Explore = () => {
 
   useEffect(() => {
     if (properties && properties.length > 0) {
-      setItems( (prev) => {
+      setItems((prev) => {
         if (page === 1) {
           return properties; // Reset items on new search
         }
@@ -64,8 +64,8 @@ const Explore = () => {
       });
     }
   }, [properties, page]);
-  
-  
+
+
   const handleCardPress = (id: string) => router.push(`/properties/${id}`);
 
   const loadMore = () => {
@@ -77,18 +77,18 @@ const Explore = () => {
   return (
     <SafeAreaView className="h-full bg-white">
       <View className="h-20 bg-[#500000]">
-              <View className="flex justify-center items-center mt-8 px-4">
-                <Image
-                  source={images.icon}
-                  className="w-20 h-10 ml-1 rounded-lg"
-                  resizeMode="cover"
-                />
-              </View>
-            </View>
+        <View className="flex justify-center items-center mt-6 px-4">
+          <Image
+            source={images.icon}
+            className="w-20 h-10 ml-1 rounded-lg"
+            resizeMode="cover"
+          />
+        </View>
+      </View>
       <View className="px-5">
-        
+
         <Search />
-        
+
       </View>
 
       <FlatList
@@ -96,14 +96,14 @@ const Explore = () => {
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
           <View style={{ width }}>
-            <UserCards item={item} onPress={() => handleCardPress(item.$id)} />
+            <HomeCards item={item} onPress={() => handleCardPress(item.$id)} />
           </View>
-          
+
         )}
         contentContainerClassName="pb-32"
         horizontal
         pagingEnabled
-        
+
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
         contentContainerStyle={{ paddingBottom: 80 }}
