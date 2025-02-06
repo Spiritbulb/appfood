@@ -9,13 +9,13 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
-
+import { useFocusEffect } from "expo-router";
 import icons from "@/constants/icons";
 import Search from "@/components/search";
 import { HomeCards } from "@/components/homecard";
 import Filters from "@/components/filter";
 import NoResults from "@/components/NoResults";
-
+import { setStatusBarBackgroundColor, setStatusBarStyle, StatusBar } from 'expo-status-bar'; // Import StatusBar
 import { getLatestFooditems } from "@/lib/appwrite";
 import { useAppwrite } from "@/lib/useAppwrite";
 
@@ -76,6 +76,7 @@ const Explore = () => {
 
   return (
     <SafeAreaView className="h-full bg-white">
+    <StatusBar style="dark"/>
       <View className="h-20 bg-[#500000]">
         <View className="flex justify-center items-center mt-6 px-4">
           <Image
