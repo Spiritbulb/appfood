@@ -7,7 +7,7 @@ const SplashScreen = () => {
     <View style={styles.container}>
         <StatusBar style='auto' />
       <Image source={require('../assets/images/icon.png')} style={styles.logo} />
-      <Text style={styles.title}>Buy, Sell and Connect</Text>
+      
     </View>
   );
 };
