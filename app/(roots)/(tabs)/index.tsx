@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import images from '@/constants/images';
 import icons from '@/constants/icons';
+import { StatusBar } from 'expo-status-bar'; // Import StatusBar
 import Search from '@/components/search';
 import { Cards, UserCards } from '@/components/cards';
 import { useGlobalContext } from '@/lib/global-provider';
@@ -51,6 +52,7 @@ export default function Index () {
 
   return(
     <SafeAreaView className='bg-white h-full'>
+    <StatusBar style="auto" />
   
       <FlatList 
        data={fooditems}
