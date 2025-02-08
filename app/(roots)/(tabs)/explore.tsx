@@ -12,7 +12,7 @@ import { router, useLocalSearchParams } from "expo-router";
 
 import icons from "@/constants/icons";
 import Search from "@/components/search";
-import { HomeCards } from "@/components/homecard";
+import { HomeCards } from "@/components/cards";
 import Filters from "@/components/filter";
 import NoResults from "@/components/NoResults";
 
