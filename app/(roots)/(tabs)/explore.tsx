@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { useEffect, useState } from "react";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, usePathname } from "expo-router";
 
 import icons from "@/constants/icons";
 import Search from "@/components/search";
@@ -21,6 +21,12 @@ import { useAppwrite } from "@/lib/useAppwrite";
 
 import images from "@/constants/images";
 import { Dimensions } from "react-native"; // Get screen width
+import { Models } from "react-native-appwrite";
+
+interface Props {
+  item: Models.Document;
+  onPress?: () => void
+}
 
 const { width } = Dimensions.get("window"); // Get full screen width
 
@@ -66,7 +72,17 @@ const Explore = () => {
   }, [properties, page]);
 
 
-  const handleCardPress = (id: string) => router.push(`/properties/${id}`);
+
+  const handleCardPress = (item: any) => router.push({
+    pathname: '/properties/[id]',
+    params: {
+      id: item.$id,
+      name: item.name,
+      price: item.price,
+      image: item.image
+    }
+  }
+  );
 
   const loadMore = () => {
     if (!loading) {
@@ -96,7 +112,7 @@ const Explore = () => {
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
           <View style={{ width }}>
-            <HomeCards item={item} onPress={() => handleCardPress(item.$id)} />
+            <HomeCards item={item} />
           </View>
 
         )}
