@@ -11,7 +11,7 @@ import {
 
 import { logout } from "@/lib/appwrite";
 import { useGlobalContext } from "@/lib/global-provider";
-
+import { StatusBar } from "expo-status-bar";
 import icons from "@/constants/icons";
 import { settings } from "@/constants/data";
 
@@ -37,8 +37,9 @@ const SettingsItem = ({
     onPress={onPress}
     className="flex flex-row items-center justify-between py-3"
   >
-    <View className="flex flex-row items-center gap-3">
-      <Image source={icon} className="size-6" />
+    <StatusBar backgroundColor="#500000" />
+    <View className="flex flex-row items-center gap-4">
+      <Image source={icon} className="size-5" />
       <Text className={`text-lg font-rubik-medium text-black-300 ${textStyle}`}>
         {title}
       </Text>
@@ -67,7 +68,7 @@ const Profile = () => {
         showsVerticalScrollIndicator={false}
         contentContainerClassName="pb-32 px-7"
       >
-        <View className="flex flex-row items-center justify-between mt-8">
+        <View className="flex flex-row items-center justify-between mt-10">
           <Text className="text-xl font-rubik-bold">Profile</Text>
           <Image source={icons.bell} className="size-5" />
         </View>
