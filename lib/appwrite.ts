@@ -1,26 +1,26 @@
-import {Account, Avatars, Client, Databases, OAuthProvider, Query} from "react-native-appwrite";
+import { Account, Avatars, Client, Databases, OAuthProvider, Query } from "react-native-appwrite";
 import * as Linking from 'expo-linking';
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import * as AuthSession from 'expo-auth-session';
 import { openAuthSessionAsync } from "expo-web-browser";
 
 
-export const config ={
-    platform: 'com.jsm.platepals',
-    endpoint: "https://cloud.appwrite.io/v1",
-    projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID,
-    databaseId: process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID,
-    hostCollectionId: process.env.EXPO_PUBLIC_APPWRITE_HOST_COLLECTION_ID,
-    gallariesCollectionId: process.env.EXPO_PUBLIC_APPWRITE_GALLARIES_COLLECTION_ID,
-    reviewsCollectionId: process.env.EXPO_PUBLIC_APPWRITE_REVIEWS_COLLECTION_ID,
-    fooditemsCollectionId: process.env.EXPO_PUBLIC_APPWRITE_FOODITEMS_COLLECTION_ID,
+export const config = {
+  platform: 'com.jsm.platepals',
+  endpoint: "https://cloud.appwrite.io/v1",
+  projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID,
+  databaseId: process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID,
+  hostCollectionId: process.env.EXPO_PUBLIC_APPWRITE_HOST_COLLECTION_ID,
+  gallariesCollectionId: process.env.EXPO_PUBLIC_APPWRITE_GALLARIES_COLLECTION_ID,
+  reviewsCollectionId: process.env.EXPO_PUBLIC_APPWRITE_REVIEWS_COLLECTION_ID,
+  fooditemsCollectionId: process.env.EXPO_PUBLIC_APPWRITE_FOODITEMS_COLLECTION_ID,
 }
 
-export const client= new Client()
+export const client = new Client()
 
-    .setEndpoint(config.endpoint!)
-    .setProject(config.projectId!)
-    .setPlatform(config.platform!)
+  .setEndpoint(config.endpoint!)
+  .setProject(config.projectId!)
+  .setPlatform(config.platform!)
 
 
 export const avatar = new Avatars(client);
@@ -60,36 +60,36 @@ export async function login() {
   }
 }
 
-  
-export async function logout(){
-    try{
-        await account.deleteSession('current');
-        return true;
-    } catch (error){
-        console.error(error);
-        return false;
-    }
+
+export async function logout() {
+  try {
+    await account.deleteSession('current');
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 }
-export async function getCurrentUser(){
-    try{
-        const response = await account.get(); //get user details
+export async function getCurrentUser() {
+  try {
+    const response = await account.get(); //get user details
 
-        //Initialize userAvatar with a default value
-        let userAvatar = null;
+    //Initialize userAvatar with a default value
+    let userAvatar = null;
 
-        if (response.$id && response.name){
-            userAvatar = avatar.getInitials(response.name);       
-        }
-            
-        return{
-            ...response,
-            avatar: userAvatar? userAvatar.toString():null,
-        }
-    } 
-    catch (error){
-        console.error(error);
-        return null;
+    if (response.$id && response.name) {
+      userAvatar = avatar.getInitials(response.name);
     }
+
+    return {
+      ...response,
+      avatar: userAvatar ? userAvatar.toString() : null,
+    }
+  }
+  catch (error) {
+    console.error(error);
+    return null;
+  }
 }
 
 export async function checkAuth() {
@@ -106,7 +106,7 @@ export async function checkAuth() {
 }
 
 export async function getLatestFooditems() {
-  try{
+  try {
     const result = await databases.listDocuments(
       config.databaseId!,
       config.fooditemsCollectionId!,
@@ -115,21 +115,21 @@ export async function getLatestFooditems() {
 
     return result.documents;
 
-  } catch(error){
+  } catch (error) {
     console.error(error);
-    return[];
+    return [];
   }
-  
-  
+
+
 }
 
-export async function getFooditems({filter, query, limit}:{
+export async function getFooditems({ filter, query, limit }: {
 
-  filter:string;
-  query:string;
+  filter: string;
+  query: string;
   limit?: number;
-}){
-  try{
+}) {
+  try {
     const buildQuery = [Query.orderDesc("$createdAt")];
 
     if (filter && filter !== "All")
@@ -153,7 +153,9 @@ export async function getFooditems({filter, query, limit}:{
     );
 
     return result.documents;
-  } catch(error){
+  } catch (error) {
     console.error(error);
-    return[];
-  }}
+    return [];
+  }
+}
+
