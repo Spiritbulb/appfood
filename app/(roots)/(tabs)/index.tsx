@@ -52,7 +52,7 @@ export default function Index () {
 
   return(
     <SafeAreaView className='bg-white h-full'>
-    <StatusBar style="auto" />
+     
   
       <FlatList 
        data={fooditems}

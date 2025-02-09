@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 const SplashScreen = () => {
   return (
     <View style={styles.container}>
-        <StatusBar style='auto' />
+        <StatusBar style='dark' />
       <Image source={require('../assets/images/icon.png')} style={styles.logo} />
       
     </View>

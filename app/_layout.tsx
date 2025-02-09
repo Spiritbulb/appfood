@@ -4,6 +4,7 @@ import "./globals.css";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import GlobalProvider from "@/lib/global-provider";
+import { View } from "react-native";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -22,8 +23,10 @@ export default function RootLayout() {
   }, [fontsLoaded]);
 
   if (!fontsLoaded) return null;
-  return(
-    <SplashScreenComponent />
-  ) 
+  return (
+    <GlobalProvider>
+      <Stack />
+    </GlobalProvider>
+  );
 
 }

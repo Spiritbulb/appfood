@@ -2,6 +2,7 @@ import { View, Text } from 'react-native';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Image } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 import icons from '@/constants/icons';
 
@@ -10,7 +11,7 @@ const TabIcon = ({ focused, icon, title}: { focused: boolean;
     icon: any; title: string }) => (
         <View className='flex-1 mt-5 flex flex-col items-center'>
             <Image source={icon} tintColor={focused ? "#eab620": "#FFFFFF"} resizeMode="contain" className="size-6"/>
-           
+            
         </View>
     )
 
