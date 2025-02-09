@@ -5,6 +5,9 @@ import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import GlobalProvider from "@/lib/global-provider";
 import { View } from "react-native";
+import { Header } from "react-native/Libraries/NewAppScreen";
+import { ThemeProvider } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -19,13 +22,16 @@ export default function RootLayout() {
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
+      
+      
     }
   }, [fontsLoaded]);
 
   if (!fontsLoaded) return null;
   return (
     <GlobalProvider>
-      <Stack />
+      <Stack screenOptions={{ headerShown: false }} />
+    
     </GlobalProvider>
   );
 
