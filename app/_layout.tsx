@@ -1,9 +1,11 @@
-import { SplashScreen, Stack } from "expo-router";
-import SplashScreenComponent from "@/components/SplashScreen";
+import { SplashScreen, Stack, Tabs } from "expo-router";
 import "./globals.css";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import GlobalProvider from "@/lib/global-provider";
+import { hideAsync } from "expo-router/build/utils/splash";
+import { useLinkProps } from "@react-navigation/native";
+import TabsLayout from "./(roots)/(tabs)/_layout";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -15,6 +17,9 @@ export default function RootLayout() {
     "Rubik-SemiBold": require("../assets/fonts/Rubik-SemiBold.ttf")
   });
 
+
+
+
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
@@ -22,8 +27,10 @@ export default function RootLayout() {
   }, [fontsLoaded]);
 
   if (!fontsLoaded) return null;
-  return(
-    <SplashScreenComponent />
-  ) 
+  return (
+    <GlobalProvider>
+      <Stack />
+    </GlobalProvider>
+  )
 
 }

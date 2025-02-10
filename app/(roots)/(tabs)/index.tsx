@@ -16,9 +16,9 @@ import NoResults from '@/components/NoResults';
 //Flatlist
 
 
-export default function Index () {
-  const {user} = useGlobalContext();
-  const params = useLocalSearchParams<{query?:string; filter?:string;}>();
+export default function Index() {
+  const { user } = useGlobalContext();
+  const params = useLocalSearchParams<{ query?: string; filter?: string; }>();
 
   const { data: LatestFooditems, loading: latestFooditemsLoading } =
     useAppwrite({
@@ -48,87 +48,87 @@ export default function Index () {
   }, [params.filter, params.query]);
 
   const handleCardPress = (id: string) => router.push(`/properties/${id}`);
-  
 
-  return(
+
+  return (
     <SafeAreaView className='bg-white h-full'>
-    <StatusBar style="auto" />
-  
-      <FlatList 
-       data={fooditems}
-       renderItem={({item}) => <UserCards item ={item} onPress={() => handleCardPress(item.$id)} />}
-       
-       numColumns={2}
-       contentContainerClassName='pb-32'
-       contentContainerStyle={{ paddingBottom: 80, rowGap: 1 }} // Add space between rows
-       columnWrapperClassName='flex gap-1 px-5'
-       showsVerticalScrollIndicator={false}
-       ListEmptyComponent={
-        loading ? (
-          <ActivityIndicator size="large" className="text-primary-300 mt-5" />
-        ) : (
-          <NoResults />
-        )
-       }
-       ListHeaderComponent={
-        <View className='px-5'>
-        
-        <View className='flex flex-row items-center justify-between mt-5'>
-          <View className='flex flex-row items-center'>
-            <Image source={{uri: user?.avatar}} className='size-12 rounded-full'/>
-            <View className='flex flex-col items-start ml-2 justify-center'>
-              <Text className='text-xs font-rubik text-yellow-700'>Good Morning</Text>
-              <Text className='text-base font-rubik-medium text-black-300'>{user?.name}</Text>
-            </View>
-          </View>
-          <Image source={icons.bell} className='size-6'/>
-        </View>
-        <Search/>
-        <View className='my-5'>
-          <View className='flex flex-row items-center justified-between'>
-            <Text className='text-xl font-rubik-bold text-black-300'>Popular</Text>
-            <View className='justify-center items-center ml-auto'>
-            <TouchableOpacity>
-              <Text className='text-base font-rubik-bold text-primary-300'>See All</Text>
-            </TouchableOpacity>
-            </View>
-            </View>
+      <StatusBar style="dark" />
 
-            {latestFooditemsLoading ? (
+      <FlatList
+        data={fooditems}
+        renderItem={({ item }) => <UserCards item={item} onPress={() => handleCardPress(item.$id)} />}
+
+        numColumns={2}
+        contentContainerClassName='pb-32'
+        contentContainerStyle={{ paddingBottom: 80, rowGap: 1 }} // Add space between rows
+        columnWrapperClassName='flex gap-1 px-5'
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          loading ? (
+            <ActivityIndicator size="large" className="text-primary-300 mt-5" />
+          ) : (
+            <NoResults />
+          )
+        }
+        ListHeaderComponent={
+          <View className='px-5'>
+
+            <View className='flex flex-row items-center justify-between mt-5'>
+              <View className='flex flex-row items-center'>
+                <Image source={{ uri: user?.avatar }} className='size-12 rounded-full' />
+                <View className='flex flex-col items-start ml-2 justify-center'>
+                  <Text className='text-xs font-rubik text-yellow-700'>Good Morning</Text>
+                  <Text className='text-base font-rubik-medium text-black-300'>{user?.name}</Text>
+                </View>
+              </View>
+              <Image source={icons.bell} className='size-6' />
+            </View>
+            <Search />
+            <View className='my-5'>
+              <View className='flex flex-row items-center justified-between'>
+                <Text className='text-xl font-rubik-bold text-black-300'>Popular</Text>
+                <View className='justify-center items-center ml-auto'>
+                  <TouchableOpacity>
+                    <Text className='text-base font-rubik-bold text-primary-300'>See All</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {latestFooditemsLoading ? (
                 <ActivityIndicator size="large" className="text-primary-300" />
               ) : !LatestFooditems || LatestFooditems.length === 0 ? (
                 <NoResults />
               ) : (
-            <FlatList 
-            data={LatestFooditems}
-            renderItem={({item}) => <Cards item ={item} onPress={() => handleCardPress(item.$id)}/>}
-            
-            horizontal 
-            bounces ={false}
-            showsHorizontalScrollIndicator={false}
-            contentContainerClassName='flex gap-5 mt-5'
+                <FlatList
+                  data={LatestFooditems}
+                  renderItem={({ item }) => <Cards item={item} onPress={() => handleCardPress(item.$id)} />}
 
-            />   
+                  horizontal
+                  bounces={false}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerClassName='flex gap-5 mt-5'
+
+                />
               )}
 
-          </View>
-          <View className='flex flex-row items-top justified-between h-100 py-1'>
-            <Text className='text-xl font-rubik-bold text-black-300'>Our Recommendation</Text>
-            <View className='justify-center items-top ml-auto'>
-            <TouchableOpacity>
-              <Text className='text-top font-rubik-bold text-primary-300'>See All</Text>
-            </TouchableOpacity>
             </View>
+            <View className='flex flex-row items-top justified-between h-100 py-1'>
+              <Text className='text-xl font-rubik-bold text-black-300'>Our Recommendation</Text>
+              <View className='justify-center items-top ml-auto'>
+                <TouchableOpacity>
+                  <Text className='text-top font-rubik-bold text-primary-300'>See All</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          
-        </View>
 
-       }
-       />
-     
+          </View>
+
+        }
+      />
+
     </SafeAreaView>
   )
 }
-  
+
 
 
