@@ -111,7 +111,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       <View className="flex flex-row items-center justify-between w-full">
         <TouchableOpacity className="w-28 mt-2 ml-0 px-3 py-3 rounded-lg bg-yellow-500 shadow-lg shadow-black-100/70 relative"
           onPress={() => handleCardPress(item.$id)}>
-          <View className="flex flex-row items-center justify-between mt-1" >
+          <View className="flex flex-row items-center justify-center mt-0" >
             <Text className="text-base font-rubik-bold text-black mt-1">Make Order</Text>
           </View>
         </TouchableOpacity>

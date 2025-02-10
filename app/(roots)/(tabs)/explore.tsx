@@ -93,7 +93,8 @@ const Explore = () => {
 
   return (
     <SafeAreaView className="h-full bg-white">
-      <StatusBar style="auto" />
+      
+      <StatusBar backgroundColor="#500000" />
       <View className="h-20 bg-[#500000]">
         <View className="flex justify-center items-center mt-6 px-4">
           <Image
