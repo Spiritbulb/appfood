@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   SafeAreaView
 } from 'react-native';
-import { useLocalSearchParams, Stack } from 'expo-router';
-import { OrderCards } from '@/components/cards';
-import { Models } from 'react-native-appwrite';
+import { useLocalSearchParams, Stack, router } from 'expo-router';
+import { HomeCards, OrderCards } from '@/components/cards';
+import { Databases, Models } from 'react-native-appwrite';
+import { databases } from '@/lib/appwrite';
 
 
 interface Props {
@@ -17,31 +18,32 @@ interface Props {
 }
 
 
+// ParentComponent.tsx
 const OrderPage = () => {
+  const [data, setData] = useState<Models.Document[]>([]);
 
-  // Get the params from the route
-  const params = useLocalSearchParams();
-  const item = params as Models.Document;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await databases.listDocuments(
+          '679bbd65000ae52d302b',
+          '679bc335000d2a9c630b'
+        );
+        setData(response.documents); // Ensure this contains all required fields
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-  // Add null check
-  if (!item) {
-    return (
-      <SafeAreaView>
-        <View>
-          <Text>Loading...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
+    fetchData();
+  }, []);
+
   return (
-    <SafeAreaView>
-      <View>
-        <View>
-          <OrderCards item={item} />
-        </View>
-      </View>
-    </SafeAreaView>
+    <View>
+      {data.map((item) => (
+        <OrderCards key={item.$id} item={item} />
+      ))}
+    </View>
   );
 }
-
-export default OrderPage;
+export default OrderPage;;
