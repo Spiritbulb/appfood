@@ -14,6 +14,7 @@ import { useGlobalContext } from "@/lib/global-provider";
 import { StatusBar } from "expo-status-bar";
 import icons from "@/constants/icons";
 import { settings } from "@/constants/data";
+import { router } from "expo-router";
 
 interface SettingsItemProp {
   icon: ImageSourcePropType;
@@ -62,6 +63,16 @@ const Profile = () => {
     }
   };
 
+  ;
+  const handleMyOrdersPress = () => router.push('/properties/myorders');
+  const handleMyPostsPress = () => router.push('/properties/myposts');
+  const handleMyWalletPress = () => router.push('/properties/mywallet');
+  const handleExtraPagePress = () => {
+    router.push('/properties/extrapage')
+  }
+
+
+
   return (
     <SafeAreaView className="h-full bg-white">
       <ScrollView
@@ -86,24 +97,28 @@ const Profile = () => {
             <Text className="text-2xl font-rubik-bold mt-2">{user?.name}</Text>
           </View>
         </View>
-       
 
         <View className="flex flex-col mt-10">
-          <SettingsItem icon={icons.calendar} title="My Posts" id={1}  key={4}/>
-          <SettingsItem icon={icons.wallet} title="My Wallet" id={2} key={3}/>
+          <SettingsItem icon={icons.calendar} title="Post" id={1} key={4}
+            onPress={handleMyPostsPress} />
+          <SettingsItem
+            icon={icons.calendar}
+            title="My Orders"
+            id={3}
+            key={2}
+            onPress={handleMyOrdersPress}
+          />
         </View>
+
 
         <View className="flex flex-col mt-10">
-          <SettingsItem icon={icons.calendar} title="My Orders" id={3} key={2}/>
-          <SettingsItem icon={icons.wallet} title="Payments" id={4} key={1}/>
-          {settings.slice(3).map((items, index) => (
-            <SettingsItem icon={items.icon}
-            title={items.title}
-            id={items.id}
-            key={items.key} />
-          ))}
+          <SettingsItem icon={icons.wallet} title="My Wallet" id={2} key={3}
+            onPress={handleMyWalletPress}
+          />
+          <SettingsItem icon={icons.wallet} title="Payments" id={4} key={1}
+            onPress={handleExtraPagePress}
+          />
         </View>
-
 
         <View className="flex flex-col border-t mt-5 pt-5 border-primary-200">
           <SettingsItem
@@ -111,7 +126,10 @@ const Profile = () => {
             title="Logout"
             textStyle="text-danger"
             showArrow={false}
-            onPress={handleLogout} id={0}  key={5}   />
+            onPress={handleLogout}
+            id={0}
+            key={5}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

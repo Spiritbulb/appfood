@@ -130,7 +130,6 @@ export const HomeCards = ({ item, onPress }: Props) => {
 
 
 export const OrderCards = ({ item, onPress }: Props) => {
-  console.log("item", item);
   return (
     <SafeAreaView className="flex bg-black px-4 py-8">
       <View className="w-full min-h-90 px-3 py-4 rounded-lg bg-white shadow-lg relative">
