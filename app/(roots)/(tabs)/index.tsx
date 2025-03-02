@@ -12,11 +12,11 @@ import { getFooditems, getLatestFooditems } from '@/lib/appwrite';
 import { useAppwrite } from '@/lib/useAppwrite';
 import { ActivityIndicator } from 'react-native';
 import NoResults from '@/components/NoResults';
-
-//Flatlist
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function Index() {
+
   const { user } = useGlobalContext();
   const params = useLocalSearchParams<{ query?: string; filter?: string; }>();
 
@@ -128,7 +128,4 @@ export default function Index() {
 
     </SafeAreaView>
   )
-}
-
-
-
+};

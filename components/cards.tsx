@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, Animated } from 'react-native'
+import { View, Text, TouchableOpacity, Image, Animated, StyleSheet } from 'react-native'
 import React, { useState } from 'react'
 import images from '@/constants/images'
 import icons from '@/constants/icons'
@@ -130,47 +130,83 @@ export const HomeCards = ({ item, onPress }: Props) => {
 
 
 export const OrderCards = ({ item, onPress }: Props) => {
+  const [portionAmount, setPortionAmount] = useState(1); // Default portion amount
+  const pricePerPortion = parseFloat(item.price); // Price of 1 portion
+
+  // Calculate total price
+  const totalPrice = (portionAmount * pricePerPortion).toFixed(2);
+
+  // Handle portion increase
+  const handleIncreasePortion = () => {
+    setPortionAmount(portionAmount + 1);
+  };
+
+  // Handle portion decrease
+  const handleDecreasePortion = () => {
+    if (portionAmount > 1) {
+      setPortionAmount(portionAmount - 1);
+    }
+  };
+
   return (
     <SafeAreaView className="flex bg-black px-4 py-8">
       <View className="w-full min-h-90 px-3 py-4 rounded-lg bg-white shadow-lg relative">
-
+        {/* Rating */}
         <View className="absolute top-5 right-5 bg-white/90 px-4 py-3 rounded-full z-10 flex-row items-center">
           <Image source={icons.star} className="w-4 h-4" />
           <Text className="text-lg font-bold text-black ml-2">{item.rating}</Text>
         </View>
 
+        {/* Food Image */}
         <Image source={{ uri: item.image }} className="w-full h-48 rounded-lg" />
 
+        {/* Food Details */}
         <View className="mt-3">
-          <Text className="text-base font-bold text-black">{item.title}</Text>
-          <Text className="text-sm text-gray-600">{item.nationality}</Text>
-          <Text className="text-sm text-gray-600">{item.ingredients}</Text>
-
-          <View className="flex-row items-left mt-2">
-            <Text className="text-base font-semibold">PORTION =</Text>
-            <Text className="text-sm text-gray-700 ml-2">{item.portions}</Text>
+          <View className="flex-column items-left mt-3" style={{ gap: 5 }}>
+            <Text className="text-base font-bold text-black">{item.title}</Text>
+            <Text className="text-sm text-gray-600">{item.nationality}</Text>
+            <Text className="text-sm text-gray-600">{item.ingredients}</Text>
           </View>
 
-          <View className="flex-row items-left mt-2">
-            <Text className="text-base font-semibold">PRICE =</Text>
-            <Text className="text-base font-bold text-primary-300 ml-2">{item.price}</Text>
+          {/* Portion Adjuster */}
+          <View className="flex-row items-center mt-2">
+            <Text className="text-base font-semibold">PORTION =</Text>
+            <TouchableOpacity
+              onPress={handleDecreasePortion}
+              className="ml-2 p-1 bg-gray-200 rounded-full"
+            >
+              <Text className="text-lg font-bold">-</Text>
+            </TouchableOpacity>
+            <Text className="text-base font-semibold mx-2">{portionAmount}</Text>
+            <TouchableOpacity
+              onPress={handleIncreasePortion}
+              className="p-1 bg-gray-200 rounded-full"
+            >
+              <Text className="text-lg font-bold">+</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Total Price */}
+          <View className="flex-row items-center mt-2">
+            <Text className="text-base font-semibold">TOTAL PRICE =</Text>
+            <Text className="text-base font-bold text-primary-300 ml-2">
+              ${totalPrice}
+            </Text>
           </View>
         </View>
 
+        {/* Buttons */}
         <View className="flex flex-row items-center justify-between w-full mt-4">
           <TouchableOpacity
             className="w-32 px-4 py-3 bg-yellow-500 rounded-lg shadow-lg"
-            onPress={() => handleCardPress(item.$id)}
+            onPress={onPress}
           >
             <Text className="text-base font-bold text-black">Make Order</Text>
           </TouchableOpacity>
 
           <Image source={icons.heart} className="w-6 h-6 mr-2" tintColor="#191D31" />
         </View>
-
       </View>
     </SafeAreaView>
   );
-}
-
-
+};
