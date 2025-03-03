@@ -165,6 +165,8 @@ const MyPosts = () => {
         </View>
     );
 };
+    );
+};
 
 export default MyPosts;
 
