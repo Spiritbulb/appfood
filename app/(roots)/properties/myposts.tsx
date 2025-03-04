@@ -160,42 +160,31 @@ const MyPosts = () => {
                 contentContainerStyle={styles.container} // Ensure the content can scroll
                 keyboardShouldPersistTaps="handled" // Dismiss keyboard when tapping outside
             >
-                {/* Image Preview Section */}
-                {selectedImage ? (
+                
+                <TouchableOpacity style={styles.button} onPress={pickImage}>
+                    <Text style={styles.buttonText}>Select Image</Text>
+                </TouchableOpacity>
+                {/* Display the selected image for preview foodcard  */}
+                {selectedImage &&(
                     <View style={styles.foodCardPreview}>
-                        <Image
-                            source={{ uri: selectedImage }} // Use the selected image URI
-                            style={styles.image}
-                            resizeMode="cover"
+           
+                       <Image
+                        source={{ uri: selectedImage }} // Use the selected image URI
+                        style={styles.image}
+                        resizeMode="cover"
                         />
                         <View style={styles.overlay}>
-                            <Text style={styles.foodTitle}>{formData.title || 'Food Name'}</Text>
-                            <Text style={styles.foodDetail}>{formData.portion || 'Portion Size'}</Text>
-                            <Text style={styles.foodDetail}>{formData.ingredients || 'Ingredients'}</Text>
-                            <Text style={styles.foodDetail}>{formData.nationality || 'Nationality'}</Text>
-                            <Text style={styles.foodPrice}>Ksh {formData.price || 'Price'}</Text>
+                          <Text style={styles.foodTitle}>{formData.title || 'Food Name'}</Text>
+                          <Text style={styles.foodDetail}>{formData.portion || 'Portion Size'}</Text>
+                          <Text style={styles.foodDetail}>{formData.nationality || 'Nationality'}</Text>
+                          <Text style={styles.foodPrice}>Ksh {formData.price || 'Price'}</Text>
                         </View>
-                    </View>
-                ) : (
+                    </View> 
+                        
+                )} : (
                     <Text style={styles.placeholderText}>No image selected</Text>
-                )}
-
-                {/* Select Image Button (always visible) */}
-                <TouchableOpacity style={styles.button} onPress={pickImage}>
-                    <Text style={styles.buttonText}>
-                        {selectedImage ? 'Change Image' : 'Select Image'}
-                    </Text>
-                </TouchableOpacity>
-
-                {/* Upload Image Button (shown only when an image is selected) */}
-                {selectedImage && (
-                    <TouchableOpacity style={styles.button} onPress={handleImageUpload}>
-                        <Text style={styles.buttonText}>Upload Image</Text>
-                    </TouchableOpacity>
-                )}
-
-                {/* Input Fields */}
-                <TextInput
+                )
+                 <TextInput
                     style={styles.input}
                     placeholder="Food Item Name"
                     value={formData.title}
@@ -207,11 +196,29 @@ const MyPosts = () => {
                     value={formData.portion}
                     onChangeText={(text) => handleChange('portion', text)}
                 />
+                 <TextInput
+                     style={styles.input}
+                     placeholder="Nationality"
+                     value={formData.nationality}
+                     onChangeText={(text) => handleChange('nationality', text)}
+                 />
+                 <TextInput
+                     style={styles.input}
+                     placeholder="Price"
+                     value={formData.price.toString()}
+                     onChangeText={(text) => handleChange('price', text)}
+                     keyboardType="numeric"
+                 />
+
+
+                <TouchableOpacity style={styles.button} onPress={handleImageUpload}>
+                    <Text style={styles.buttonText}>Upload Image</Text>
+                </TouchableOpacity>
                 <TextInput
                     style={styles.input}
-                    placeholder="Ingredients"
-                    value={formData.ingredients}
-                    onChangeText={(text) => handleChange('ingredients', text)}
+                    placeholder="Portion"
+                    value={formData.portion}
+                    onChangeText={(text) => handleChange('portion', text)}
                 />
                 <TextInput
                     style={styles.input}
@@ -283,12 +290,14 @@ const styles = StyleSheet.create({
         color: '#888',
         marginBottom: 15,
     },
+    
     foodCardPreview: {
         position: 'relative',
         width: '100%',
         alignItems: 'center',
         marginBottom: 20,
     },
+    
     overlay: {
         position: 'absolute',
         top: 0,
@@ -316,4 +325,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#FFD700',
     },
+
+   
 });
+    
+

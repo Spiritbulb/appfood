@@ -103,7 +103,7 @@ export default function Index() {
 
               {latestFooditemsLoading ? (
                 <ActivityIndicator size="large" className="text-primary-300" />
-              ) : !LatestFooditems || LatestFooditems.length === 0 ? (
+              ) : !LatestFooditems || LatestFooditems?.length === 0 ? (
                 <NoResults />
               ) : (
                 <FlatList
