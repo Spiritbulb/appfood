@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, Animated, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import images from '@/constants/images'
 import icons from '@/constants/icons'
 import { Databases, Models } from 'react-native-appwrite'
@@ -12,8 +12,7 @@ interface Props {
   onPress?: () => void
 }
 
-const handleCardPress = (item: any) => router.push('/properties/$[id]');
-const [isFavorite, setIsFavorite] = useState(false);
+
 
 export const Cards = ({ item, onPress }: Props) => {
   return (
@@ -78,19 +77,28 @@ export const UserCards = ({ item, onPress }: Props) => {
 
 
 export const HomeCards = ({ item, onPress }: Props) => {
+
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  if (!item) {
+    return null; // or return a placeholder component
+  }
+
+  const handleCardPress = (id: string) => router.push(`/properties/${id}`);
+
   return (
     <View className="w-full max-w-md mx-auto mt-4 px-4 py-4 rounded-lg bg-white shadow-lg shadow-black-100/30 relative">
       {/* Rating Badge */}
       <View className="flex flex-row items-center absolute px-2 top-5 right-5 bg-white/90 p-1 rounded-full z-50 shadow-sm">
         <Image source={icons.star} className="size-4" />
         <Text className="text-sm font-rubik-bold text-primary-300 ml-1">
-          {item.rating}
+          {item?.rating || 'N/A'}
         </Text>
       </View>
 
       {/* Food Image */}
       <Image
-        source={{ uri: item.image }}
+        source={{ uri: item?.image || 'default_image_url' }}
         className="w-full h-80 rounded-lg"
         resizeMode="cover"
       />
@@ -98,13 +106,13 @@ export const HomeCards = ({ item, onPress }: Props) => {
       {/* Food Details */}
       <View className="flex flex-col mt-4">
         <Text className="text-xl font-rubik-bold text-black-800">
-          {item.title}
+          {item?.title || 'No Title'}
         </Text>
         <Text className="text-sm font-rubik text-gray-600 mt-1">
-          {item.nationality}
+          {item?.nationality || 'N/A'}
         </Text>
         <Text className="text-sm font-rubik text-gray-600 mt-1">
-          {item.ingredients}
+          {item?.ingredients || 'N/A'}
         </Text>
 
         {/* Portion and Price */}
@@ -112,13 +120,13 @@ export const HomeCards = ({ item, onPress }: Props) => {
           <View className="flex-row items-center">
             <Text className="text-base font-semibold text-gray-800">Portion:</Text>
             <Text className="text-sm font-rubik text-gray-600 ml-2">
-              {item.portions}
+              {item?.portions || 'N/A'}
             </Text>
           </View>
           <View className="flex-row items-center">
             <Text className="text-base font-semibold text-gray-800">Price:</Text>
             <Text className="text-lg font-rubik-bold text-primary-300 ml-2">
-              Ksh {item.price}
+              Ksh {item?.price || 'N/A'}
             </Text>
           </View>
         </View>
@@ -145,6 +153,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
     </View>
   );
 };
+
 
 
 export const OrderCards = ({ item, onPress }: Props) => {
