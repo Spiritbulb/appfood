@@ -12,6 +12,7 @@ import {
     Platform,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+
 import { Client, Databases, Storage } from 'appwrite'; // Appwrite SDK
 import * as FileSystem from 'expo-file-system'; // For handling file uploads
 import { StatusBar } from 'expo-status-bar';
@@ -25,6 +26,7 @@ interface FormData {
     price: string | number;
 }
 
+
 // Initialize Appwrite
 const client = new Client()
     .setEndpoint('https://cloud.appwrite.io/v1') // Your Appwrite endpoint
@@ -34,16 +36,21 @@ const databases = new Databases(client);
 const storage = new Storage(client);
 
 const MyPosts = () => {
+
     const [formData, setFormData] = useState<FormData>({
+
         title: '',
         image: '', // This will store the image URL
         portion: '',
         nationality: '',
         price: '',
+
+
     });
     const [selectedImage, setSelectedImage] = useState<string | null>(null); // For preview
 
     const handleChange = (name: string, value: string | number) => {
+
         setFormData({ ...formData, [name]: value });
     };
 
@@ -62,30 +69,32 @@ const MyPosts = () => {
         });
 
         if (!result.canceled) {
+
             setSelectedImage(result.assets[0].uri); // Set the selected image URI for preview
+
         }
     };
 
-    const uploadImageToAppwrite = async (imageUri: string): Promise<string | undefined> => {
+    const uploadImageToAppwrite = async (imageUri) => {
         try {
-            const file = new File([imageUri], `image_${Date.now()}.jpg`, { type: 'image/jpeg' });
-
-            const response = await storage.createFile(
-                '67c4a5fd0017cc988880', // Bucket ID
-                'unique()',
-                file
-            );
-
+            const file = {
+                uri: imageUri,
+                name: `image_${Date.now()}.jpg`,
+                type: 'image/jpg',
+            };
+            const response = await storage.createFile('67c4a5fd0017cc988880', file);
             console.log('Image uploaded:', response);
 
-            return storage.getFileView('67c4a5fd0017cc988880', response.$id);
+            const fileUrl = storage.getFileView('67c4a5fd0017cc988880', response.$id);
+            return fileUrl;
         } catch (error) {
             console.error('Error uploading image:', error);
-            Alert.alert('Error', 'Failed to upload image.');
+            throw error;
         }
     };
 
     const handleImageUpload = async () => {
+
         if (!selectedImage) {
             Alert.alert('Error', 'Please select an image first.');
             return;
@@ -99,6 +108,7 @@ const MyPosts = () => {
             } else {
                 throw new Error('File URL is undefined');
             }
+
         } catch (error) {
             console.error('Error uploading image:', error);
             Alert.alert('Error', 'Failed to upload image.');
@@ -106,13 +116,16 @@ const MyPosts = () => {
     };
 
     const saveFoodItem = async (formData: FormData) => {
+
         try {
             const response = await databases.createDocument(
                 '679bbd65000ae52d302b', // Replace with your database ID
                 '679bbf04000441fd0477', // Replace with your collection ID
                 'unique()', // Unique ID for the document
                 {
+
                     name: formData.title, // Add the required "name" field
+
                     title: formData.title,
                     image: formData.image,
                     portion: formData.portion,
@@ -144,6 +157,7 @@ const MyPosts = () => {
     };
 
     return (
+
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust behavior based on platform
             style={{ flex: 1 }}
@@ -232,6 +246,7 @@ const MyPosts = () => {
             </ScrollView>
         </KeyboardAvoidingView>
     );
+
 };
 
 export default MyPosts;
@@ -319,6 +334,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#FFD700',
     },
+
    
 });
     
+

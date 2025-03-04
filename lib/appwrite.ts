@@ -14,6 +14,8 @@ export const config = {
   gallariesCollectionId: process.env.EXPO_PUBLIC_APPWRITE_GALLARIES_COLLECTION_ID,
   reviewsCollectionId: process.env.EXPO_PUBLIC_APPWRITE_REVIEWS_COLLECTION_ID,
   fooditemsCollectionId: process.env.EXPO_PUBLIC_APPWRITE_FOODITEMS_COLLECTION_ID,
+  foodimageCollectionId: process.env.EXPO_PUBLIC_APPWRITE_FOODIMAGE_COLLECTION_ID
+
 }
 
 export const client = new Client()
