@@ -40,7 +40,7 @@ const MyPosts = () => {
         title: '',
         image: '', // This will store the image URL
         portion: '',
-        ingredients: '', 
+        ingredients: '', // testing push
         nationality: '',
         price: '',
     });
