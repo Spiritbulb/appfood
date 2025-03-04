@@ -167,31 +167,31 @@ const MyPosts = () => {
                 contentContainerStyle={styles.container}
                 keyboardShouldPersistTaps="handled" // Dismiss keyboard when tapping outside
             >
-                
+
                 <TouchableOpacity style={styles.button} onPress={pickImage}>
                     <Text style={styles.buttonText}>Select Image</Text>
                 </TouchableOpacity>
                 {/* Display the selected image for preview foodcard  */}
-                {selectedImage &&(
+                {selectedImage && (
                     <View style={styles.foodCardPreview}>
-           
-                       <Image
-                        source={{ uri: selectedImage }} // Use the selected image URI
-                        style={styles.image}
-                        resizeMode="cover"
+
+                        <Image
+                            source={{ uri: selectedImage }} // Use the selected image URI
+                            style={styles.image}
+                            resizeMode="cover"
                         />
                         <View style={styles.overlay}>
-                          <Text style={styles.foodTitle}>{formData.title || 'Food Name'}</Text>
-                          <Text style={styles.foodDetail}>{formData.portion || 'Portion Size'}</Text>
-                          <Text style={styles.foodDetail}>{formData.nationality || 'Nationality'}</Text>
-                          <Text style={styles.foodPrice}>Ksh {formData.price || 'Price'}</Text>
+                            <Text style={styles.foodTitle}>{formData.title || 'Food Name'}</Text>
+                            <Text style={styles.foodDetail}>{formData.portion || 'Portion Size'}</Text>
+                            <Text style={styles.foodDetail}>{formData.nationality || 'Nationality'}</Text>
+                            <Text style={styles.foodPrice}>Ksh {formData.price || 'Price'}</Text>
                         </View>
-                    </View> 
-                        
+                    </View>
+
                 )} : (
-                    <Text style={styles.placeholderText}>No image selected</Text>
+                <Text style={styles.placeholderText}>No image selected</Text>
                 )
-                 <TextInput
+                <TextInput
                     style={styles.input}
                     placeholder="Food Item Name"
                     value={formData.title}
@@ -203,19 +203,19 @@ const MyPosts = () => {
                     value={formData.portion}
                     onChangeText={(text) => handleChange('portion', text)}
                 />
-                 <TextInput
-                     style={styles.input}
-                     placeholder="Nationality"
-                     value={formData.nationality}
-                     onChangeText={(text) => handleChange('nationality', text)}
-                 />
-                 <TextInput
-                     style={styles.input}
-                     placeholder="Price"
-                     value={formData.price.toString()}
-                     onChangeText={(text) => handleChange('price', text)}
-                     keyboardType="numeric"
-                 />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Nationality"
+                    value={formData.nationality}
+                    onChangeText={(text) => handleChange('nationality', text)}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Price"
+                    value={formData.price.toString()}
+                    onChangeText={(text) => handleChange('price', text)}
+                    keyboardType="numeric"
+                />
 
 
                 <TouchableOpacity style={styles.button} onPress={handleImageUpload}>
@@ -299,14 +299,14 @@ const styles = StyleSheet.create({
         color: '#888',
         marginBottom: 15,
     },
-    
+
     foodCardPreview: {
         position: 'relative',
         width: '100%',
         alignItems: 'center',
         marginBottom: 20,
     },
-    
+
     overlay: {
         position: 'absolute',
         top: 0,
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
         color: '#FFD700',
     },
 
-   
+
 });
-    
+
 
