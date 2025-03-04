@@ -74,24 +74,31 @@ const MyPosts = () => {
 
         }
     };
+    
 
-    const uploadImageToAppwrite = async (imageUri) => {
+    const uploadImageToAppwrite = async (imageUri: string): Promise<string | undefined> => {
         try {
-            const file = {
-                uri: imageUri,
-                name: `image_${Date.now()}.jpg`,
-                type: 'image/jpg',
-            };
-            const response = await storage.createFile('67c4a5fd0017cc988880', file);
+            const file = new File([imageUri], `image_${Date.now()}.jpg`, { type: 'image/jpeg' });
+
+            const response = await storage.createFile(
+                '67c4a5fd0017cc988880', // Bucket ID
+                'unique()',
+                file
+            );
+
             console.log('Image uploaded:', response);
-//testing
-            const fileUrl = storage.getFileView('67c4a5fd0017cc988880', response.$id);
-            return fileUrl;
+
+            return storage.getFileView('67c4a5fd0017cc988880', response.$id);
         } catch (error) {
             console.error('Error uploading image:', error);
-            throw error;
+            Alert.alert('Error', 'Failed to upload image.');
         }
     };
+
+
+  
+//testing
+           
 
     const handleImageUpload = async () => {
 
