@@ -50,6 +50,7 @@ export default function Index() {
   const handleCardPress = (id: string) => router.push(`/properties/${id}`);
   const handleNotificationsPress = () => router.push('/properties/myorders');
   const handleProfilePress = () => router.push('/Profile');
+  const handlePagePress = () => router.push('/explore')
 
 
 
@@ -59,7 +60,7 @@ export default function Index() {
 
       <FlatList
         data={fooditems}
-        renderItem={({ item }) => <UserCards item={item} onPress={() => handleCardPress(item.$id)} />}
+        renderItem={({ item }) => <UserCards item={item} onPress={() => handlePagePress()} />}
 
         numColumns={2}
         contentContainerClassName='pb-32'
@@ -108,7 +109,7 @@ export default function Index() {
               ) : (
                 <FlatList
                   data={LatestFooditems}
-                  renderItem={({ item }) => <Cards item={item} onPress={() => handleCardPress(item.$id)} />}
+                  renderItem={({ item }) => <Cards item={item} onPress={() => handlePagePress()} />}
 
                   horizontal
                   bounces={false}
