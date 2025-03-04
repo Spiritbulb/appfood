@@ -70,6 +70,8 @@ const Profile = () => {
   const handleExtraPagePress = () => {
     router.push('/properties/extrapage')
   }
+  const handleEditProfilePress = () => router.push('/properties/editprofile');
+
 
 
 
@@ -84,19 +86,17 @@ const Profile = () => {
           <Image source={icons.bell} className="size-5" />
         </View>
 
-        <View className="flex flex-row justify-center mt-5">
-          <View className="flex flex-col items-center relative mt-5">
-            <Image
-              source={{ uri: user?.avatar }}
-              className="size-44 relative rounded-full"
-            />
-            <TouchableOpacity className="absolute bottom-10 right-1">
-              <Image source={icons.edit} className="size-9" />
-            </TouchableOpacity>
-
-            <Text className="text-2xl font-rubik-bold mt-2">{user?.name}</Text>
+        <TouchableOpacity onPress={handleEditProfilePress}>
+          <View className="flex flex-row justify-center mt-5">
+            <View className="flex flex-col items-center relative mt-5">
+              <Image
+                source={{ uri: user?.avatar }}
+                className="size-44 relative rounded-full"
+              />
+              <Text className="text-2xl font-rubik-bold mt-2">{user?.name}</Text>
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
 
         <View className="flex flex-col mt-10">
           <SettingsItem icon={icons.calendar} title="Post" id={1} key={4}
