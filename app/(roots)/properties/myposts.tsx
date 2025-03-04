@@ -153,12 +153,7 @@ const MyPosts = () => {
                 contentContainerStyle={styles.container}
                 keyboardShouldPersistTaps="handled" // Dismiss keyboard when tapping outside
             >
-                <TextInput
-                    style={styles.input}
-                    placeholder="Food Item Name"
-                    value={formData.title}
-                    onChangeText={(text) => handleChange('title', text)}
-                />
+                
                 <TouchableOpacity style={styles.button} onPress={pickImage}>
                     <Text style={styles.buttonText}>Select Image</Text>
                 </TouchableOpacity>
