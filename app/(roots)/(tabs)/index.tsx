@@ -48,6 +48,9 @@ export default function Index() {
   }, [params.filter, params.query]);
 
   const handleCardPress = (id: string) => router.push(`/properties/${id}`);
+  const handleNotificationsPress = () => router.push('/properties/myorders');
+  const handleProfilePress = () => router.push('/Profile');
+
 
 
   return (
@@ -74,14 +77,18 @@ export default function Index() {
           <View className='px-5'>
 
             <View className='flex flex-row items-center justify-between mt-5'>
-              <View className='flex flex-row items-center'>
-                <Image source={{ uri: user?.avatar }} className='size-12 rounded-full' />
-                <View className='flex flex-col items-start ml-2 justify-center'>
-                  <Text className='text-xs font-rubik text-yellow-700'>Good Morning</Text>
-                  <Text className='text-base font-rubik-medium text-black-300'>{user?.name}</Text>
+              <TouchableOpacity onPress={() => handleProfilePress()}>
+                <View className='flex flex-row items-center' >
+                  <Image source={{ uri: user?.avatar }} className='size-12 rounded-full' />
+                  <View className='flex flex-col items-start ml-2 justify-center'>
+                    <Text className='text-xs font-rubik text-yellow-700'>Good Morning</Text>
+                    <Text className='text-base font-rubik-medium text-black-300'>{user?.name}</Text>
+                  </View>
                 </View>
-              </View>
-              <Image source={icons.bell} className='size-6' />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleNotificationsPress()}>
+                <Image source={icons.bell} className='size-6' />
+              </TouchableOpacity>
             </View>
             <Search />
             <View className='my-5'>
