@@ -163,9 +163,7 @@ const MyPosts = () => {
                 <Text style={styles.buttonText}>Post Item</Text>
             </TouchableOpacity>
         </View>
-    );
-};
-    );
+    )
 };
 
 export default MyPosts;
