@@ -84,7 +84,7 @@ const MyPosts = () => {
             };
             const response = await storage.createFile('67c4a5fd0017cc988880', file);
             console.log('Image uploaded:', response);
-
+//testing
             const fileUrl = storage.getFileView('67c4a5fd0017cc988880', response.$id);
             return fileUrl;
         } catch (error) {
