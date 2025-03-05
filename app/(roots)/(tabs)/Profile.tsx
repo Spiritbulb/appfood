@@ -94,7 +94,7 @@ const Profile = () => {
           <TouchableOpacity onPress={handleEditProfilePress}>
             <View className="flex flex-col items-center relative mt-5">
               <Image
-                source={{ uri: user?.avatar }}
+                source={{ uri: user?.picture }}
                 className="size-44 relative rounded-full"
               />
               <Text className="text-2xl font-rubik-bold mt-2">{user?.name}</Text>
