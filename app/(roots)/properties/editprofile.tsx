@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import {
     View,
@@ -14,9 +12,7 @@ import {
     Platform,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-
 import { Client, Databases, Storage } from 'appwrite'; // Appwrite SDK
-import * as FileSystem from 'expo-file-system'; // For handling file uploads
 import { StatusBar } from 'expo-status-bar';
 
 // Define the FormData interface
@@ -24,7 +20,6 @@ interface FormData {
     image: string; // This will store the image URL
     name: string;
 }
-
 
 // Initialize Appwrite
 const client = new Client()
@@ -34,18 +29,14 @@ const client = new Client()
 const databases = new Databases(client);
 const storage = new Storage(client);
 
-const editprofile = () => {
-
+const EditProfile: React.FC = () => {
     const [formData, setFormData] = useState<FormData>({
         image: '', // This will store the image URL
         name: '',
-
-
     });
     const [selectedImage, setSelectedImage] = useState<string | null>(null); // For preview
 
-    const handleChange = (name: string, value: string | number) => {
-
+    const handleChange = (name: keyof FormData, value: string) => {
         setFormData({ ...formData, [name]: value });
     };
 
@@ -64,23 +55,25 @@ const editprofile = () => {
         });
 
         if (!result.canceled) {
-
             setSelectedImage(result.assets[0].uri); // Set the selected image URI for preview
-
         }
     };
 
-    const uploadImageToAppwrite = async (imageUri) => {
+    const uploadImageToAppwrite = async (imageUri: string): Promise<string | undefined> => {
         try {
-            const file = {
-                uri: imageUri,
-                name: `image_${Date.now()}.jpg`,
-                type: 'image/jpg',
-            };
-            const response = await storage.createFile('67c4a5fd0017cc988880', file);
-            console.log('Image uploaded:', response);
+            // Convert the image URI to a Blob or File object
+            const response = await fetch(imageUri);
+            const blob = await response.blob();
+            const file = new File([blob], `image_${Date.now()}.jpg`, { type: 'image/jpeg' });
 
-            const fileUrl = storage.getFileView('67c4a5fd0017cc988880', response.$id);
+            const uploadResponse = await storage.createFile(
+                '67c4a5fd0017cc988880', // Bucket ID
+                'unique()',
+                file
+            );
+            console.log('Image uploaded:', uploadResponse);
+
+            const fileUrl = storage.getFileView('67c4a5fd0017cc988880', uploadResponse.$id);
             return fileUrl;
         } catch (error) {
             console.error('Error uploading image:', error);
@@ -89,7 +82,6 @@ const editprofile = () => {
     };
 
     const handleImageUpload = async () => {
-
         if (!selectedImage) {
             Alert.alert('Error', 'Please select an image first.');
             return;
@@ -103,7 +95,6 @@ const editprofile = () => {
             } else {
                 throw new Error('File URL is undefined');
             }
-
         } catch (error) {
             console.error('Error uploading image:', error);
             Alert.alert('Error', 'Failed to upload image.');
@@ -111,7 +102,6 @@ const editprofile = () => {
     };
 
     const saveFoodItem = async (formData: FormData) => {
-
         try {
             const response = await databases.createDocument(
                 '679bbd65000ae52d302b', // Replace with your database ID
@@ -122,7 +112,7 @@ const editprofile = () => {
                     name: formData.name,
                 }
             );
-            console.log('new profile saved:', response);
+            console.log('New profile saved:', response);
             return response;
         } catch (error) {
             console.error('Error updating profile:', error);
@@ -146,7 +136,6 @@ const editprofile = () => {
     };
 
     return (
-
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust behavior based on platform
             style={{ flex: 1 }}
@@ -156,46 +145,46 @@ const editprofile = () => {
                 contentContainerStyle={styles.container}
                 keyboardShouldPersistTaps="handled" // Dismiss keyboard when tapping outside
             >
-
                 <TouchableOpacity style={styles.button} onPress={pickImage}>
                     <Text style={styles.buttonText}>Select Image</Text>
                 </TouchableOpacity>
-                {/* Display the selected image for preview foodcard  */}
-                {selectedImage && (
-                    <View style={styles.foodCardPreview}>
 
+                {/* Display the selected image for preview */}
+                {selectedImage ? (
+                    <View style={styles.foodCardPreview}>
                         <Image
                             source={{ uri: selectedImage }} // Use the selected image URI
                             style={styles.image}
                             resizeMode="cover"
                         />
                         <View style={styles.overlay}>
-                            <Text style={styles.foodTitle}>{formData.name || 'Food Name'}</Text>
+                            <Text style={styles.foodTitle}>{formData.name || 'User Name'}</Text>
                         </View>
                     </View>
+                ) : (
+                    <Text style={styles.placeholderText}>No image selected</Text>
+                )}
 
-                )} : (
-                <Text style={styles.placeholderText}>No image selected</Text>
-                )
                 <TextInput
                     style={styles.input}
                     placeholder="User Name"
                     value={formData.name}
-                    onChangeText={(text) => handleChange('title', text)}
+                    onChangeText={(text) => handleChange('name', text)} // Fixed: Changed 'title' to 'name'
                 />
+
                 <TouchableOpacity style={styles.button} onPress={handleImageUpload}>
                     <Text style={styles.buttonText}>Upload Image</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>update profile</Text>
+                    <Text style={styles.buttonText}>Update Profile</Text>
                 </TouchableOpacity>
             </ScrollView>
         </KeyboardAvoidingView>
     );
-
 };
 
-export default editprofile;
+export default EditProfile;
 
 const styles = StyleSheet.create({
     container: {
@@ -245,14 +234,12 @@ const styles = StyleSheet.create({
         color: '#888',
         marginBottom: 15,
     },
-
     foodCardPreview: {
         position: 'relative',
         width: '100%',
         alignItems: 'center',
         marginBottom: 20,
     },
-
     overlay: {
         position: 'absolute',
         top: 0,
@@ -270,16 +257,4 @@ const styles = StyleSheet.create({
         color: '#fff',
         marginBottom: 5,
     },
-    foodDetail: {
-        fontSize: 16,
-        color: '#fff',
-        marginBottom: 5,
-    },
-    foodPrice: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#FFD700',
-    },
-
-
 });

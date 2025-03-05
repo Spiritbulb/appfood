@@ -40,7 +40,7 @@ const MyPosts = () => {
         title: '',
         image: '', // This will store the image URL
         portion: '',
-        ingredients: '', // testing push
+        ingredients: '', 
         nationality: '',
         price: '',
     });
@@ -152,13 +152,14 @@ const MyPosts = () => {
 
     return (
         <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust behavior based on platform
-            style={{ flex: 1 }} // Ensure the container takes up the full height
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+            style={{ flex: 1 }} 
         >
             <StatusBar backgroundColor="#500000" />
             <ScrollView
-                contentContainerStyle={styles.container} // Ensure the content can scroll
-                keyboardShouldPersistTaps="handled" // Dismiss keyboard when tapping outside
+                contentContainerStyle={[styles.container, { paddingBottom: 150 }]} 
+                keyboardShouldPersistTaps="handled" 
+                
             >
                 {/* Image Preview Section */}
                 {selectedImage ? (
