@@ -38,6 +38,7 @@ const MyPosts = () => {
         title: '',
         image: '', // This will store the image URL
         portion: '',
+        ingredients: '', 
         nationality: '',
         price: '',
     });
