@@ -25,7 +25,6 @@ export default function Index() {
     try {
       const response = await fetch('https://plate-pals.handler.spiritbulb.com/api/latest-fooditems');
       const data = await response.json();
-      console.log('Latest Food Items:', data.results); // Extract results
       setLatestFooditems(data.results); // Set results to state
     } catch (error) {
       console.error('Error fetching latest food items:', error);
@@ -39,7 +38,6 @@ export default function Index() {
     try {
       const response = await fetch('https://plate-pals.handler.spiritbulb.com/api/data');
       const data = await response.json();
-      console.log('All Food Items:', data.results); // Extract results
       setFooditems(data.results); // Set results to state
     } catch (error) {
       console.error('Error fetching food items:', error);
