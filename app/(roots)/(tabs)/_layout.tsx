@@ -36,6 +36,17 @@ const TabsLayout = () => {
       }}
     >
       {/* Tab screens should be defined here */}
+
+      <Tabs.Screen
+        name="explore"
+        options={{
+          title: "Explore",
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon icon={icons.home} focused={focused} title="Explore" />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="index"
         options={{
@@ -43,17 +54,7 @@ const TabsLayout = () => {
 
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon icon={icons.home} focused={focused} title="Home" />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: "Explore",
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <TabIcon icon={icons.search} focused={focused} title="Explore" />
+            <TabIcon icon={icons.search} focused={focused} title="Home" />
           ),
         }}
       />
@@ -67,6 +68,9 @@ const TabsLayout = () => {
           ),
         }}
       />
+
+
+
 
     </Tabs>
   );

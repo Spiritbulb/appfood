@@ -3,7 +3,10 @@ import {
   FlatList,
   Image,
   SafeAreaView,
+  Text,
+  TouchableOpacity,
   View,
+  Modal,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
@@ -14,12 +17,15 @@ import NoResults from "@/components/NoResults";
 import { StatusBar } from 'expo-status-bar';
 import images from "@/constants/images";
 import { Dimensions } from "react-native";
+import icons from "@/constants/icons";
+import { useGlobalContext } from "@/lib/global-provider";
 
 const { width } = Dimensions.get("window"); // Get full screen width
 
 const Explore = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isDropdownVisible, setDropdownVisible] = useState(false); // State for dropdown visibility
 
   // Fetch all food items from the API
   const fetchFooditems = async () => {
@@ -53,22 +59,76 @@ const Explore = () => {
     });
   };
 
+  const handleNotificationsPress = () => router.push('/properties/myorders');
+  const handleProfilePress = () => router.push('/Profile');
+  const handlePagePress = () => router.push('/explore');
+  const { user } = useGlobalContext();
+
+  // Toggle dropdown visibility
+  const toggleDropdown = () => {
+    setDropdownVisible(!isDropdownVisible);
+  };
+
   return (
     <SafeAreaView className="h-full bg-white">
       <StatusBar backgroundColor="#500000" />
       <View className="h-20 bg-[#500000]">
-        <View className="flex justify-center items-center mt-6 px-4">
+        <View className="flex justify-left items-left mt-6 px-4">
           <Image
             source={images.icon}
             className="w-20 h-10 ml-1 rounded-lg"
             resizeMode="cover"
           />
         </View>
-      </View>
-      <View className="px-5">
-        <Search />
+
+        {/* Dropdown Toggle Button */}
+        <TouchableOpacity
+          onPress={toggleDropdown}
+          className="absolute top-12 right-5 z-15" // Adjusted top and left values
+        >
+          <View>
+            <Text className="text-white text-2xl">☰</Text> {/* Replace with an icon if needed */}
+          </View>
+        </TouchableOpacity>
       </View>
 
+      {/* Dropdown Menu */}
+      <Modal
+        transparent={true}
+        visible={isDropdownVisible}
+        onRequestClose={() => setDropdownVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setDropdownVisible(false)} // Close dropdown when tapping outside
+        >
+          <View style={styles.dropdownMenu}>
+            <View className="px-5">
+              <View className='flex flex-row items-center justify-between mt-5'>
+                <TouchableOpacity onPress={() => { handleProfilePress(); setDropdownVisible(false); }}>
+                  <View className='flex flex-row items-center'>
+                    <Image source={{ uri: user?.picture }} className='size-12 rounded-full' />
+                    <View className='flex flex-col items-start ml-2 justify-center'>
+                      <Text className='text-xs font-rubik text-yellow-700'>Good Morning</Text>
+                      <Text className='text-base font-rubik-medium text-black-300'>{user?.name}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+                <View>
+                </View>
+                <TouchableOpacity onPress={() => { handleNotificationsPress(); setDropdownVisible(false); }}>
+                  <Image source={icons.bell} className='size-6' />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      <Search />
+
+      {/* FlatList for Food Items */}
       <FlatList
         data={items}
         keyExtractor={(item) => item.item_id.toString()} // Use item.item_id as the key
@@ -92,6 +152,22 @@ const Explore = () => {
       />
     </SafeAreaView>
   );
+};
+
+// Styles for the dropdown menu
+const styles = {
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+  },
+  dropdownMenu: {
+    width: '70%', // Adjust width as needed
+    height: '100%', // Full height
+    backgroundColor: '#fff',
+    borderTopRightRadius: 20, // Rounded corners on the right
+    borderBottomRightRadius: 20,
+    padding: 20,
+  },
 };
 
 export default Explore;
