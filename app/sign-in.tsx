@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Redirect } from "expo-router";
@@ -12,20 +12,26 @@ const SignIn = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      {/* Header Section */}
       <View className="h-32 bg-[#500000]">
         <View className="flex-row justify-center items-center mt-6 px-4">
           <Image source={images.icon} className="w-25 h-20 ml-1 rounded-lg" resizeMode="contain" />
         </View>
       </View>
 
-      <View className="px-8 pt-8">
-        <Text className="text-center text-5xl font-bold">Welcome</Text>
-        <Text className="text-gray-500 mt-1 text-center">Plate Pals partners with Spiritbulb to manage user accounts. Please click the button below to log in with Spiritbulb.</Text>
+      {/* Main Content with Background Image and Sign-In Button */}
+      <View className="flex-1 justify-center items-center">
+        {/* Background Image */}
+        <Image
+          source={{ uri: "https://src.spiritbulb.com/assets/secinfo-platepals.png" }} // Use the provided image URL
+          className="w-full h-full absolute" // Make the image cover the entire screen
+          resizeMode="cover" // Ensure the image covers the entire area
+        />
 
-        {/* ✅ Sign In Button with Image Logo */}
+        {/* Sign-In Button Overlay */}
         <TouchableOpacity
           onPress={login} // Call login from GlobalProvider
-          className="bg-[#CC8400] rounded-full py-4 mt-4 justify-center items-center"
+          className="bg-[#CC8400] rounded-full py-5 px-20 justify-center items-center absolute top-60" // Adjust positioning as needed
         >
           <Image
             source={{ uri: "https://src.spiritbulb.com/assets/SPIRITwite'.png" }} // Use the provided image URL
