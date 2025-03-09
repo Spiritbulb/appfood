@@ -76,14 +76,14 @@ export const UserCards = ({ item, onPress }: Props) => {
 }
 
 
-export const HomeCards = ({ item }) => {
+export const HomeCards = ({ item,onPress}: Props) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   if (!item) {
-    return null; // or return a placeholder component
+    return null; // or return a placeholder componen
   }
 
-  const handleCardPress = (id) => router.push(`/properties/${id}`);
+  const handleCardPress = () => router.push(`/properties/$[id]`);
 
   return (
     <View className="w-full max-w-md mx-auto mt-4 px-4 py-4 rounded-lg bg-white shadow-lg shadow-black-100/30 relative">
@@ -134,7 +134,7 @@ export const HomeCards = ({ item }) => {
         <View className="flex flex-row items-center justify-between mt-4">
           <TouchableOpacity
             className="flex-1 mr-6 px-1 py-3 rounded-lg bg-yellow-500 shadow-md shadow-yellow-500/30"
-            onPress={() => handleCardPress(item.item_id)} // Use item.item_id
+            onPress={() => handleCardPress()} // Use item.item_id
           >
             <Text className="text-base font-rubik-bold text-black text-center">
               Make Order
