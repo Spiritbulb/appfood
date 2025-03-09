@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Redirect } from "expo-router";
 import images from "@/constants/images";
 import { useGlobalContext } from "@/lib/global-provider";
+import { StatusBar } from "expo-status-bar";
 
 const SignIn = () => {
   const { login, isLogged, loading } = useGlobalContext();
@@ -12,6 +13,7 @@ const SignIn = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      <StatusBar backgroundColor="#500000" />
       {/* Header Section */}
       <View className="h-32 bg-[#500000]">
         <View className="flex-row justify-center items-center mt-6 px-4">
@@ -32,11 +34,12 @@ const SignIn = () => {
         <TouchableOpacity
           onPress={login} // Call login from GlobalProvider
           className="bg-[#CC8400] rounded-full py-5 px-20 justify-center items-center absolute top-60" // Adjust positioning as needed
-        >
+        > 
           <Image
             source={{ uri: "https://src.spiritbulb.com/assets/SPIRITwite'.png" }} // Use the provided image URL
             className="w-24 h-12" // Adjust width and height as needed
             resizeMode="contain" // Ensure the image fits well
+            
           />
         </TouchableOpacity>
       </View>
