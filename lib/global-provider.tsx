@@ -17,7 +17,7 @@ interface GlobalContextType {
   user: AuthUser | null;
   loading: boolean;
   login: () => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => Promise<boolean>;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -113,12 +113,28 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
   const logout = async () => {
     setLoading(true);
     try {
+      // Clear local storage
       await SecureStore.deleteItemAsync(SECURE_STORE_KEY);
       setUser(null);
+
+      // Redirect to Auth0 logout endpoint
+      const logoutUrl = `https://${AUTH0_DOMAIN}/v2/logout?client_id=${AUTH0_CLIENT_ID}&returnTo=${AuthSession.makeRedirectUri({ useProxy: true })}`;
+
+      // Use AuthSession's startAsync method correctly
+      const result = await AuthSession.startAsync({ authUrl: logoutUrl });
+
+      if (result.type === "success") {
+        return true; // Logout successful
+      } else {
+        console.error("Logout failed:", result.type);
+        return false; // Logout failed
+      }
     } catch (error) {
       console.error("Logout error:", error);
+      return false; // Logout failed
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

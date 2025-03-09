@@ -8,13 +8,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-import { logout } from "@/lib/appwrite";
-import { useGlobalContext } from "@/lib/global-provider";
 import { StatusBar } from "expo-status-bar";
 import icons from "@/constants/icons";
-import { settings } from "@/constants/data";
 import { router } from "expo-router";
+import { useGlobalContext } from "@/lib/global-provider";
 
 interface SettingsItemProp {
   icon: ImageSourcePropType;
@@ -51,30 +48,24 @@ const SettingsItem = ({
 );
 
 const Profile = () => {
-  const { user, refetch } = useGlobalContext();
+  const { user, logout } = useGlobalContext();
 
   const handleLogout = async () => {
-    const result = await logout();
-    if (result) {
+    const success = await logout();
+    if (success) {
       Alert.alert("Success", "Logged out successfully");
-      refetch();
+      router.replace("/sign-in"); // Redirect to the sign-in screen
     } else {
       Alert.alert("Error", "Failed to logout");
     }
   };
 
-  ;
-  const handleMyOrdersPress = () => router.push('/properties/myorders');
-  const handleMyPostsPress = () => router.push('/properties/myposts');
-  const handleMyWalletPress = () => router.push('/properties/mywallet');
-  const handleExtraPagePress = () => {
-    router.push('/properties/extrapage')
-  }
-  const handleEditProfilePress = () => router.push('/properties/editprofile');
-  const handleNotificationsPress = () => router.push('/properties/myorders');
-
-
-
+  const handleMyOrdersPress = () => router.push("/properties/myorders");
+  const handleMyPostsPress = () => router.push("/properties/myposts");
+  const handleMyWalletPress = () => router.push("/properties/mywallet");
+  const handleExtraPagePress = () => router.push("/properties/extrapage");
+  const handleEditProfilePress = () => router.push("/properties/editprofile");
+  const handleNotificationsPress = () => router.push("/properties/myorders");
 
   return (
     <SafeAreaView className="h-full bg-white">
@@ -89,7 +80,6 @@ const Profile = () => {
           </TouchableOpacity>
         </View>
 
-
         <View className="flex flex-row justify-center mt-5">
           <TouchableOpacity onPress={handleEditProfilePress}>
             <View className="flex flex-col items-center relative mt-5">
@@ -103,8 +93,13 @@ const Profile = () => {
         </View>
 
         <View className="flex flex-col mt-10">
-          <SettingsItem icon={icons.calendar} title="Post" id={1} key={4}
-            onPress={handleMyPostsPress} />
+          <SettingsItem
+            icon={icons.calendar}
+            title="Post"
+            id={1}
+            key={4}
+            onPress={handleMyPostsPress}
+          />
           <SettingsItem
             icon={icons.calendar}
             title="My Orders"
@@ -114,12 +109,19 @@ const Profile = () => {
           />
         </View>
 
-
         <View className="flex flex-col mt-10">
-          <SettingsItem icon={icons.wallet} title="My Wallet" id={2} key={3}
+          <SettingsItem
+            icon={icons.wallet}
+            title="My Wallet"
+            id={2}
+            key={3}
             onPress={handleMyWalletPress}
           />
-          <SettingsItem icon={icons.wallet} title="Payments" id={4} key={1}
+          <SettingsItem
+            icon={icons.wallet}
+            title="Payments"
+            id={4}
+            key={1}
             onPress={handleExtraPagePress}
           />
         </View>

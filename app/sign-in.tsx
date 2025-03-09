@@ -20,14 +20,18 @@ const SignIn = () => {
 
       <View className="px-8 pt-8">
         <Text className="text-center text-5xl font-bold">Welcome</Text>
-        <Text className="text-gray-500 mt-1 text-center">Sign in using Auth0</Text>
+        <Text className="text-gray-500 mt-1 text-center">Plate Pals partners with Spiritbulb to manage user accounts. Please click the button below to log in with Spiritbulb.</Text>
 
-        {/* ✅ Sign In Button */}
+        {/* ✅ Sign In Button with Image Logo */}
         <TouchableOpacity
           onPress={login} // Call login from GlobalProvider
-          className="bg-[#6B4423] rounded-full py-4 mt-4"
+          className="bg-[#6B4423] rounded-full py-4 mt-4 justify-center items-center"
         >
-          <Text className="text-center text-[#FFFFFF]">Sign In</Text>
+          <Image
+            source={{ uri: "https://src.spiritbulb.com/assets/SPIRITwite'.png" }} // Use the provided image URL
+            className="w-24 h-12" // Adjust width and height as needed
+            resizeMode="contain" // Ensure the image fits well
+          />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
