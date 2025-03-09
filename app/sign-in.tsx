@@ -12,7 +12,7 @@ const SignIn = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="h-32 bg-[#FFA500]">
+      <View className="h-32 bg-[#500000]">
         <View className="flex-row justify-center items-center mt-6 px-4">
           <Image source={images.icon} className="w-20 h-20 ml-1 rounded-lg" resizeMode="contain" />
         </View>
@@ -25,7 +25,7 @@ const SignIn = () => {
         {/* ✅ Sign In Button with Image Logo */}
         <TouchableOpacity
           onPress={login} // Call login from GlobalProvider
-          className="bg-[#6B4423] rounded-full py-4 mt-4 justify-center items-center"
+          className="bg-[#CC8400] rounded-full py-4 mt-4 justify-center items-center"
         >
           <Image
             source={{ uri: "https://src.spiritbulb.com/assets/SPIRITwite'.png" }} // Use the provided image URL
