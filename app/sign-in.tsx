@@ -14,7 +14,7 @@ const SignIn = () => {
     <SafeAreaView className="flex-1 bg-white">
       <View className="h-32 bg-[#500000]">
         <View className="flex-row justify-center items-center mt-6 px-4">
-          <Image source={images.icon} className="w-20 h-20 ml-1 rounded-lg" resizeMode="contain" />
+          <Image source={images.icon} className="w-25 h-20 ml-1 rounded-lg" resizeMode="contain" />
         </View>
       </View>
 
