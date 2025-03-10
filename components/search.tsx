@@ -4,7 +4,11 @@ import { useLocalSearchParams } from 'expo-router';
 import icons from '@/constants/icons';
 import useDebounce, { useDebouncedCallback } from 'use-debounce';
 
-const Search = ({ onSearchResults }) => {
+interface SearchProps {
+  onSearchResults: (results: { success: boolean; results: any[] }) => void;
+}
+
+const Search = ({ onSearchResults }: SearchProps) => {
   const param = useLocalSearchParams<{ query?: string }>();
   const [search, setSearch] = useState(param.query || '');
   const [loading, setLoading] = useState(false); // Loading state
