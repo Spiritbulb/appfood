@@ -41,12 +41,12 @@ const styles = {
 const Explore = () => {
   const [items, setItems] = useState<{ item_id: number; title: string; price: number; image: string }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isDropdownVisible, setDropdownVisible] = useState(false); // State for dropdown visibility
-  const [searchResults, setSearchResults] = useState<any[]>([]); // State for search results
-  const [isSearching, setIsSearching] = useState(false); // State to track if searching
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false); // State to track keyboard visibility
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
-  // Fetch all food items from the API
+
   const fetchFooditems = async () => {
     try {
       const response = await fetch('https://plate-pals.handler.spiritbulb.com/api/data');
@@ -126,15 +126,15 @@ const Explore = () => {
             resizeMode="cover"
           />
         </View>
-        <TouchableOpacity className="absolute top-12 right-11 z-15" onPress={() => { handleNotificationsPress(); setDropdownVisible(false); }}>
-          <Image source={icons.bell} className='size-6' tintColor="#FFFFFF" />
+        <TouchableOpacity className="absolute top-12 right-12 z-15 px-1 py-0" onPress={() => { handleNotificationsPress(); setDropdownVisible(false); }}>
+          <Image source={icons.bell} className='size-7' tintColor="#FFFFFF" />
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={toggleDropdown}
-          className="absolute top-12 right-4 z-15"
+          className="absolute top-12 right-2 z-15 py-0"
         >
-          <Image source={icons.menu} className="size-6" tintColor="#FFFFFF" />
+          <Image source={icons.menu} className="size-7" tintColor="#FFFFFF" />
         </TouchableOpacity>
       </View>
 

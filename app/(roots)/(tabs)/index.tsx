@@ -16,6 +16,7 @@ import * as FileSystem from 'expo-file-system'; // For handling file uploads
 import { StatusBar } from 'expo-status-bar';
 import * as MediaLibrary from 'expo-media-library';
 import axios from 'axios';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const requestPermissions = async () => {
   const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -152,7 +153,6 @@ const MyPosts = () => {
     try {
       // Ensure the image URL is included in the form data
       const formDataWithImage = { ...formData, image: formData.image };
-      console.log('Form Data:', formDataWithImage);
 
       // Save the form data (including the image URL) to the database
       await saveFoodItem(formDataWithImage);
@@ -165,37 +165,42 @@ const MyPosts = () => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust behavior based on platform
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}
     >
       <StatusBar backgroundColor="#500000" />
       <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled" // Dismiss keyboard when tapping outside
+        contentContainerStyle={
+          styles.container
+        }
+        keyboardShouldPersistTaps="handled"
+
       >
-        <TouchableOpacity style={styles.button} onPress={pickImage}>
-          <Text style={styles.buttonText}>Select Image</Text>
-        </TouchableOpacity>
-        {/* Display the selected image for preview */}
         {selectedImage ? (
           <View style={styles.foodCardPreview}>
             <Image
-              source={{ uri: selectedImage }} // Use the selected image URI
+              source={{ uri: selectedImage }}
               style={styles.image}
-              resizeMode="cover"
+              resizeMode="contain"
             />
             <View style={styles.overlay}>
               <Text style={styles.foodTitle}>{formData.title || 'Food Name'}</Text>
-              <Text style={styles.foodDetail}>{formData.portion || 'Portion Size'}</Text>
+              <Text style={styles.foodDetail}>{formData.nationality || 'Nationality'}</Text>
               <Text style={styles.foodDetail}>{formData.ingredients || 'Ingredients'}</Text>
               <Text style={styles.foodDetail}>{formData.description || 'Description'}</Text>
-              <Text style={styles.foodDetail}>{formData.nationality || 'Nationality'}</Text>
+              <Text style={styles.foodDetail}>{formData.portion || 'Portion Size'}</Text>
               <Text style={styles.foodPrice}>Ksh {formData.price || 'Price'}</Text>
             </View>
           </View>
         ) : (
           <Text style={styles.placeholderText}>No image selected</Text>
         )}
+        <TouchableOpacity style={styles.button} onPress={pickImage}>
+          <Text style={styles.buttonText}>Select Image</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleImageUpload}>
+          <Text style={styles.buttonText}>Upload Image</Text>
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           placeholder="Food Item Name"
@@ -213,8 +218,8 @@ const MyPosts = () => {
           placeholder="Ingredients"
           value={formData.ingredients}
           onChangeText={(text) => handleChange('ingredients', text)}
-          />
-          <TextInput
+        />
+        <TextInput
           style={styles.input}
           placeholder="Description"
           value={formData.description}
@@ -229,18 +234,18 @@ const MyPosts = () => {
         <TextInput
           style={styles.input}
           placeholder="Price"
-          value={formData.price.toString()} // Ensure value is a string
+          value={formData.price.toString()}
           onChangeText={(text) => handleChange('price', text)}
           keyboardType="numeric"
         />
-        <TouchableOpacity style={styles.button} onPress={handleImageUpload}>
-          <Text style={styles.buttonText}>Upload Image</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Post Item</Text>
-        </TouchableOpacity>
+        <View style={{ paddingBottom: 20 }}>
+          <TouchableOpacity style={styles.button} onPress={handleSubmit} className=''>
+            <Text style={styles.buttonText}>Post Item</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
+
   );
 };
 
@@ -249,15 +254,14 @@ export default MyPosts;
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    marginTop: 9,
-
+    marginTop: 20,
     padding: 20,
     justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f8f8f8',
   },
   input: {
     height: 50,
-    borderColor: '#ccc',
+    borderColor: '#500000',
     borderWidth: 1,
     marginBottom: 15,
     paddingHorizontal: 10,
@@ -267,7 +271,7 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     paddingVertical: 12,
-    backgroundColor: '#FFD700',
+    backgroundColor: '#eab620',
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -277,18 +281,12 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     marginBottom: 15,
+    paddingBottom: 20,
   },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#000',
-  },
-  image: {
-    width: 270,
-    height: 320, // Adjust height as needed
-    borderRadius: 8,
-    marginBottom: 15,
-    marginLeft: 35,
   },
   placeholderText: {
     textAlign: 'center',
@@ -299,33 +297,39 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 25,
+  },
+  image: {
+    width: '100%',
+    height: 350,
+    borderRadius: 12,
+    resizeMode: 'cover',
   },
   overlay: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
     bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)', // Slight dark overlay for better visibility
-    borderRadius: 8,
+    left: 40,
+    right: 40,
+    top: 0,
+    padding: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 12,
   },
   foodTitle: {
-    fontSize: 20,
+    fontSize: 15,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 5,
   },
   foodDetail: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#fff',
     marginBottom: 5,
   },
   foodPrice: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 'bold',
-    color: '#FFD700',
+    color: '#FFf',
   },
 });
