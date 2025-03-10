@@ -29,6 +29,8 @@ interface FormData {
   title: string;
   image: string; // This will store the image URL
   portion: string;
+  ingredients: string;
+  description: string;
   nationality: string;
   price: string | number;
 }
@@ -39,6 +41,7 @@ const MyPosts = () => {
     image: '', // This will store the image URL
     portion: '',
     ingredients: '',
+    description: '',
     nationality: '',
     price: '',
   });
@@ -141,7 +144,7 @@ const MyPosts = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.title || !formData.image || !formData.portion || !formData.nationality || !formData.price) {
+    if (!formData.title || !formData.image || !formData.portion || !formData.ingredients || !formData.description || !formData.nationality || !formData.price) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
@@ -149,6 +152,7 @@ const MyPosts = () => {
     try {
       // Ensure the image URL is included in the form data
       const formDataWithImage = { ...formData, image: formData.image };
+      console.log('Form Data:', formDataWithImage);
 
       // Save the form data (including the image URL) to the database
       await saveFoodItem(formDataWithImage);
@@ -183,6 +187,8 @@ const MyPosts = () => {
             <View style={styles.overlay}>
               <Text style={styles.foodTitle}>{formData.title || 'Food Name'}</Text>
               <Text style={styles.foodDetail}>{formData.portion || 'Portion Size'}</Text>
+              <Text style={styles.foodDetail}>{formData.ingredients || 'Ingredients'}</Text>
+              <Text style={styles.foodDetail}>{formData.description || 'Description'}</Text>
               <Text style={styles.foodDetail}>{formData.nationality || 'Nationality'}</Text>
               <Text style={styles.foodPrice}>Ksh {formData.price || 'Price'}</Text>
             </View>
@@ -201,6 +207,18 @@ const MyPosts = () => {
           placeholder="Portion"
           value={formData.portion}
           onChangeText={(text) => handleChange('portion', text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Ingredients"
+          value={formData.ingredients}
+          onChangeText={(text) => handleChange('ingredients', text)}
+          />
+          <TextInput
+          style={styles.input}
+          placeholder="Description"
+          value={formData.description}
+          onChangeText={(text) => handleChange('description', text)}
         />
         <TextInput
           style={styles.input}
