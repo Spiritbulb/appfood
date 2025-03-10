@@ -76,7 +76,7 @@ export const UserCards = ({ item, onPress }: Props) => {
 }
 
 
-export const HomeCards = ({ item,onPress}: Props) => {
+export const HomeCards = ({ item, onPress }: Props) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   if (!item) {

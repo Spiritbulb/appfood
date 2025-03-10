@@ -20,12 +20,12 @@ const Search = () => {
   }
 
   return (
-    <View className='flex-1 flex-row items-center justify-between px-4 rounded-lg bg-accent-100 border border-primary-100 mt-5 py-2'>
-      <View className='flex-1 flex flex-row items-center justify-start z-50'>
+    <View className='w-80 flex-row items-center justify-between px-6 rounded-lg bg-accent-100 border border-primary-100 mt-5 py-3 relative'>
+      <View className='flex-1 flex-row items-center justify-start z-50'>
         <Image source={icons.search} className='size-5' />
         <TextInput
           className='text-sm text-gray-700 px-3 py-2'
-          placeholder="Craving Something??"
+          placeholder="Craving Something"
           onChangeText={handleSearch}
         />
       </View>

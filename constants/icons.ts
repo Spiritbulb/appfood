@@ -31,7 +31,11 @@ import wifi from "@/assets/icons/wifi.png";
 import location from "@/assets/icons/location.png";
 import edit from "@/assets/icons/edit.png";
 import icoon from "@/assets/icons/icoon.png";
-import heartfilled from "@/assets/icons/heartfilled.png"
+import heartfilled from "@/assets/icons/heartfilled.png";
+import addpost from "@/assets/icons/addpost.png";
+import menu from "@/assets/icons/menu.png";
+
+
 
 export default {
   google,
@@ -68,4 +72,6 @@ export default {
   edit,
   icoon,
   heartfilled,
+  addpost,
+  menu,
 };

@@ -80,15 +80,15 @@ const Explore = () => {
             resizeMode="cover"
           />
         </View>
+        <TouchableOpacity className="absolute top-12 right-11 z-15" onPress={() => { handleNotificationsPress(); setDropdownVisible(false); }}>
+          <Image source={icons.bell} className='size-6' tintColor="#FFFFFF" />
+        </TouchableOpacity>
 
-        {/* Dropdown Toggle Button */}
         <TouchableOpacity
           onPress={toggleDropdown}
-          className="absolute top-12 right-5 z-15" // Adjusted top and left values
+          className="absolute top-12 right-4 z-15"
         >
-          <View>
-            <Text className="text-white text-2xl">☰</Text> {/* Replace with an icon if needed */}
-          </View>
+          <Image source={icons.menu} className="size-6" tintColor="#FFFFFF" />
         </TouchableOpacity>
       </View>
 
@@ -107,18 +107,13 @@ const Explore = () => {
             <View className="px-5">
               <View className='flex flex-row items-center justify-between mt-5'>
                 <TouchableOpacity onPress={() => { handleProfilePress(); setDropdownVisible(false); }}>
-                  <View className='flex flex-row items-center'>
+                  <View className='flex flex-row items-left justify-left'>
                     <Image source={{ uri: user?.picture }} className='size-12 rounded-full' />
                     <View className='flex flex-col items-start ml-2 justify-center'>
                       <Text className='text-xs font-rubik text-yellow-700'>Good Morning</Text>
                       <Text className='text-base font-rubik-medium text-black-300'>{user?.name}</Text>
                     </View>
                   </View>
-                </TouchableOpacity>
-                <View>
-                </View>
-                <TouchableOpacity onPress={() => { handleNotificationsPress(); setDropdownVisible(false); }}>
-                  <Image source={icons.bell} className='size-6' />
                 </TouchableOpacity>
               </View>
             </View>
@@ -158,14 +153,16 @@ const Explore = () => {
 const styles = {
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    backgroundColor: 'rgba(224, 192, 192, 0.6)',
   },
   dropdownMenu: {
-    width: '70%', // Adjust width as needed
-    height: '100%', // Full height
+    position: 'absolute',
+    right: 0,
+    width: '60%',
+    height: '100%',
     backgroundColor: '#fff',
-    borderTopRightRadius: 20, // Rounded corners on the right
-    borderBottomRightRadius: 20,
+    borderTopLeftRadius: 20, // Rounded corners on the left
+    borderBottomLeftRadius: 20,
     padding: 20,
   },
 };
