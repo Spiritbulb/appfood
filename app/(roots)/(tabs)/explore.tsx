@@ -51,8 +51,7 @@ const Explore = () => {
     try {
       const response = await fetch('https://plate-pals.handler.spiritbulb.com/api/data');
       const data = await response.json();
-      console.log('Fetched Food Items:', data.results); // Debugging
-      setItems(data.results); // Set results to state
+      setItems(data.results);
     } catch (error) {
       console.error('Error fetching food items:', error);
     } finally {
@@ -60,7 +59,6 @@ const Explore = () => {
     }
   };
 
-  // Fetch data when the component mounts
   useEffect(() => {
     fetchFooditems();
   }, []);
@@ -108,12 +106,11 @@ const Explore = () => {
 
   // Handle search results from the Search component
   const handleSearchResults = (response: any) => {
-    console.log('Search Results:', response); // Debugging
     if (response.success) {
-      setSearchResults(response.results); // Extract the results array
-      setIsSearching(response.results.length > 0 || isKeyboardVisible); // Set isSearching based on results or keyboard visibility
+      setSearchResults(response.results);
+      setIsSearching(response.results.length > 0 || isKeyboardVisible);
     } else {
-      setSearchResults([]); // Clear results if the response is not successful
+      setSearchResults([]);
       setIsSearching(false);
     }
   };
@@ -150,7 +147,7 @@ const Explore = () => {
         <TouchableOpacity
           style={styles.modalOverlay}
           activeOpacity={1}
-          onPress={() => setDropdownVisible(false)} // Close dropdown when tapping outside
+          onPress={() => setDropdownVisible(false)}
         >
           <View style={styles.dropdownMenu}>
             <View className="px-5">
@@ -171,7 +168,9 @@ const Explore = () => {
       </Modal>
 
       {/* Search Component */}
-      <Search onSearchResults={handleSearchResults} />
+      <View className="w-100 h-20 ml-1 rounded-lg">
+        <Search onSearchResults={handleSearchResults} />
+      </View>
 
       {/* Display Search Results or Food Items */}
       {isSearching ? (

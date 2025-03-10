@@ -56,7 +56,7 @@ const Search = ({ onSearchResults }: SearchProps) => {
     <View className='flex-1 px-4'>
       {/* Search Input */}
       <View className='flex-row items-center justify-between rounded-lg bg-accent-100 border border-primary-100 mt-5 py-2'>
-        <View className='flex-1 flex-row items-center justify-start z-50'>
+        <View className='flex-row items-center justify-right z-50 px-4'>
           <Image source={icons.search} className='size-5' />
           <TextInput
             className='text-sm text-gray-700 px-3 py-2 flex-1'
