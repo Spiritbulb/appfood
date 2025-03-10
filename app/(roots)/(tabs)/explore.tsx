@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   View,
   Modal,
+  Keyboard,
+  Dimensions,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
@@ -16,16 +18,33 @@ import { HomeCards } from "@/components/cards";
 import NoResults from "@/components/NoResults";
 import { StatusBar } from 'expo-status-bar';
 import images from "@/constants/images";
-import { Dimensions } from "react-native";
 import icons from "@/constants/icons";
 import { useGlobalContext } from "@/lib/global-provider";
 
 const { width } = Dimensions.get("window"); // Get full screen width
 
+const styles = {
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+  },
+  dropdownMenu: {
+    width: Dimensions.get("window").width * 0.7, // Adjust width as needed
+    height: Dimensions.get("window").height, // Full height
+    backgroundColor: '#fff',
+    borderTopRightRadius: 20, // Rounded corners on the right
+    borderBottomRightRadius: 20,
+    padding: 20,
+  },
+};
+
 const Explore = () => {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<{ item_id: number; title: string; price: number; image: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDropdownVisible, setDropdownVisible] = useState(false); // State for dropdown visibility
+  const [searchResults, setSearchResults] = useState<any[]>([]); // State for search results
+  const [isSearching, setIsSearching] = useState(false); // State to track if searching
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false); // State to track keyboard visibility
 
   // Fetch all food items from the API
   const fetchFooditems = async () => {
@@ -46,8 +65,26 @@ const Explore = () => {
     fetchFooditems();
   }, []);
 
+  // Track keyboard visibility
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true);
+    });
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false);
+      if (searchResults.length === 0) {
+        setIsSearching(false); // Reset isSearching if no search results
+      }
+    });
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, [searchResults]);
+
   // Handle card press
-  const handleCardPress = (item) => {
+  const handleCardPress = (item: any) => {
     router.push({
       pathname: '/properties/[id]',
       params: {
@@ -67,6 +104,18 @@ const Explore = () => {
   // Toggle dropdown visibility
   const toggleDropdown = () => {
     setDropdownVisible(!isDropdownVisible);
+  };
+
+  // Handle search results from the Search component
+  const handleSearchResults = (response: any) => {
+    console.log('Search Results:', response); // Debugging
+    if (response.success) {
+      setSearchResults(response.results); // Extract the results array
+      setIsSearching(response.results.length > 0 || isKeyboardVisible); // Set isSearching based on results or keyboard visibility
+    } else {
+      setSearchResults([]); // Clear results if the response is not successful
+      setIsSearching(false);
+    }
   };
 
   return (
@@ -126,48 +175,55 @@ const Explore = () => {
         </TouchableOpacity>
       </Modal>
 
-      <Search />
+      {/* Search Component */}
+      <Search onSearchResults={handleSearchResults} />
 
-      {/* FlatList for Food Items */}
-      <FlatList
-        data={items}
-        keyExtractor={(item) => item.item_id.toString()} // Use item.item_id as the key
-        renderItem={({ item }) => (
-          <View style={{ width }}>
-            <HomeCards item={item} onPress={() => handleCardPress(item)} />
-          </View>
-        )}
-        contentContainerClassName="pb-32"
-        horizontal
-        pagingEnabled
-        contentContainerStyle={{ paddingBottom: 80 }}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          loading ? (
-            <ActivityIndicator size="large" className="text-primary-300 mt-5" />
-          ) : (
+      {/* Display Search Results or Food Items */}
+      {isSearching ? (
+        // Display search results
+        <FlatList
+          data={searchResults}
+          keyExtractor={(item) => item.item_id.toString()} // Use item.item_id as the key
+          renderItem={({ item }) => (
+            <View style={{ width }}>
+              <HomeCards item={item} onPress={() => handleCardPress(item)} />
+            </View>
+          )}
+          contentContainerClassName="pb-32"
+          horizontal
+          pagingEnabled
+          contentContainerStyle={{ paddingBottom: 80 }}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
             <NoResults />
-          )
-        }
-      />
+          }
+        />
+      ) : (
+        // Display all food items
+        <FlatList
+          data={items}
+          keyExtractor={(item) => item.item_id.toString()} // Use item.item_id as the key
+          renderItem={({ item }) => (
+            <View style={{ width }}>
+              <HomeCards item={item} onPress={() => handleCardPress(item)} />
+            </View>
+          )}
+          contentContainerClassName="pb-32"
+          horizontal
+          pagingEnabled
+          contentContainerStyle={{ paddingBottom: 80 }}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            loading ? (
+              <ActivityIndicator size="large" className="text-primary-300 mt-5" />
+            ) : (
+              <NoResults />
+            )
+          }
+        />
+      )}
     </SafeAreaView>
   );
-};
-
-// Styles for the dropdown menu
-const styles = {
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-  },
-  dropdownMenu: {
-    width: '70%', // Adjust width as needed
-    height: '100%', // Full height
-    backgroundColor: '#fff',
-    borderTopRightRadius: 20, // Rounded corners on the right
-    borderBottomRightRadius: 20,
-    padding: 20,
-  },
 };
 
 export default Explore;
