@@ -10,13 +10,15 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system'; // For handling file uploads
 import { StatusBar } from 'expo-status-bar';
 import * as MediaLibrary from 'expo-media-library';
 import axios from 'axios';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation for navigation
+import { router } from 'expo-router';
 
 const requestPermissions = async () => {
   const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -37,6 +39,7 @@ interface FormData {
 }
 
 const MyPosts = () => {
+  const navigation = useNavigation(); // Initialize navigation
   const [formData, setFormData] = useState<FormData>({
     title: '',
     image: '', // This will store the image URL
@@ -47,12 +50,18 @@ const MyPosts = () => {
     price: '',
   });
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // For preview
+  const [uploading, setUploading] = useState<boolean>(false); // Track upload status
 
   const handleChange = (name: string, value: string | number) => {
     setFormData({ ...formData, [name]: value });
   };
 
   const pickImage = async () => {
+    if (uploading) {
+      Alert.alert('Upload in progress', 'Please wait for the current upload to complete or cancel it by selecting a new image.');
+      return;
+    }
+
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Permission required', 'Please allow access to your media library to upload images.');
@@ -107,6 +116,8 @@ const MyPosts = () => {
       return;
     }
 
+    setUploading(true); // Set uploading status to true
+
     try {
       const fileUrl = await uploadImageToWorker(selectedImage);
       if (fileUrl) {
@@ -118,6 +129,8 @@ const MyPosts = () => {
     } catch (error) {
       console.error('Error uploading image:', error);
       Alert.alert('Error', 'Failed to upload image.');
+    } finally {
+      setUploading(false); // Reset uploading status
     }
   };
 
@@ -157,6 +170,22 @@ const MyPosts = () => {
       // Save the form data (including the image URL) to the database
       await saveFoodItem(formDataWithImage);
       Alert.alert('Success', 'Food item posted successfully!');
+
+      // Clear the form inputs
+      setFormData({
+        title: '',
+        image: '',
+        portion: '',
+        ingredients: '',
+        description: '',
+        nationality: '',
+        price: '',
+      });
+      setSelectedImage(null); // Clear the selected image
+
+      // Redirect to the Explore page
+
+      router.push('/explore'); // Replace 'Explore' with the actual name of your Explore screen
     } catch (error) {
       console.error('Error posting item:', error);
       Alert.alert('Error', 'Failed to post food item.');
@@ -164,19 +193,14 @@ const MyPosts = () => {
   };
 
   return (
-  
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}
     >
       <StatusBar backgroundColor="#500000" />
       <ScrollView
-        contentContainerStyle={
-          styles.container
-        }
+        contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
-        
-
       >
         {selectedImage ? (
           <View style={styles.foodCardPreview}>
@@ -197,41 +221,50 @@ const MyPosts = () => {
         ) : (
           <Text style={styles.placeholderText}>No image selected</Text>
         )}
-        <TouchableOpacity style={styles.button} onPress={pickImage}>
+        <TouchableOpacity style={styles.button} onPress={pickImage} disabled={uploading}>
           <Text style={styles.buttonText}>Select Image</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleImageUpload}>
-          <Text style={styles.buttonText}>Upload Image</Text>
+        <TouchableOpacity style={styles.button} onPress={handleImageUpload} disabled={uploading}>
+          {uploading ? (
+            <ActivityIndicator color="#000" />
+          ) : (
+            <Text style={styles.buttonText}>Upload Image</Text>
+          )}
         </TouchableOpacity>
         <TextInput
           style={styles.input}
           placeholder="Food Item Name"
           value={formData.title}
           onChangeText={(text) => handleChange('title', text)}
+          editable={!uploading}
         />
         <TextInput
           style={styles.input}
           placeholder="Portion"
           value={formData.portion}
           onChangeText={(text) => handleChange('portion', text)}
+          editable={!uploading}
         />
         <TextInput
           style={styles.input}
           placeholder="Ingredients"
           value={formData.ingredients}
           onChangeText={(text) => handleChange('ingredients', text)}
+          editable={!uploading}
         />
         <TextInput
           style={styles.input}
           placeholder="Description"
           value={formData.description}
           onChangeText={(text) => handleChange('description', text)}
+          editable={!uploading}
         />
         <TextInput
           style={styles.input}
           placeholder="Nationality"
           value={formData.nationality}
           onChangeText={(text) => handleChange('nationality', text)}
+          editable={!uploading}
         />
         <TextInput
           style={styles.input}
@@ -239,15 +272,15 @@ const MyPosts = () => {
           value={formData.price.toString()}
           onChangeText={(text) => handleChange('price', text)}
           keyboardType="numeric"
+          editable={!uploading}
         />
         <View style={{ paddingBottom: 90 }}>
-          <TouchableOpacity style={styles.button} onPress={handleSubmit} className=''>
+          <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={uploading}>
             <Text style={styles.buttonText}>Post Item</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-
   );
 };
 
