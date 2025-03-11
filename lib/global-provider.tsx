@@ -41,7 +41,7 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
       responseType: "token",
       scopes: ["openid", "profile", "email"],
     },
-    discovery ?? undefined
+    discovery ?? null
   );
 
   useEffect(() => {
@@ -121,7 +121,7 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
       const logoutUrl = `https://${AUTH0_DOMAIN}/v2/logout?client_id=${AUTH0_CLIENT_ID}&returnTo=${AuthSession.makeRedirectUri({ useProxy: true })}`;
 
       // Use AuthSession's startAsync method correctly
-      const result = await AuthSession.startAsync({ authUrl: logoutUrl });
+      const result = await AuthSession.startAsync({ authUrl: logoutUrl});
 
       if (result.type === "success") {
         return true; // Logout successful
