@@ -119,7 +119,7 @@ const Explore = () => {
     <SafeAreaView className="h-full bg-white">
       <StatusBar backgroundColor="#500000" />
       <View className="h-20 bg-[#500000]">
-        <View className="flex justify-left items-left mt-6 px-4">
+        <View className="flex justify-left items-left mt-6 px-6 py-2">
           <Image
             source={images.icon}
             className="w-20 h-10 ml-1 rounded-lg"
