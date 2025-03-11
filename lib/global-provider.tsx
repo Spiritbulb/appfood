@@ -99,7 +99,7 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
 
       return data;
     } catch (error) {
-      console.error("Error fetching user info:", error);
+      console.error("Safe Error:", error);
       return null;
     }
   };

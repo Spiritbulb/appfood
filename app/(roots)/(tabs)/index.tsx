@@ -164,7 +164,8 @@ const MyPosts = () => {
   };
 
   return (
-    <KeyboardAvoidingView
+  
+    <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}
     >
@@ -174,6 +175,7 @@ const MyPosts = () => {
           styles.container
         }
         keyboardShouldPersistTaps="handled"
+        
 
       >
         {selectedImage ? (
@@ -238,7 +240,7 @@ const MyPosts = () => {
           onChangeText={(text) => handleChange('price', text)}
           keyboardType="numeric"
         />
-        <View style={{ paddingBottom: 20 }}>
+        <View style={{ paddingBottom: 90 }}>
           <TouchableOpacity style={styles.button} onPress={handleSubmit} className=''>
             <Text style={styles.buttonText}>Post Item</Text>
           </TouchableOpacity>
