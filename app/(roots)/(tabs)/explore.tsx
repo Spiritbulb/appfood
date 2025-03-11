@@ -118,7 +118,7 @@ const Explore = () => {
   return (
     <SafeAreaView className="h-full bg-white">
       <StatusBar backgroundColor="#500000" />
-      <View className="h-20 bg-[#500000]">
+      <View className="h-20 mt-4 bg-[#500000]">
         <View className="flex justify-left items-left mt-6 px-6 py-2">
           <Image
             source={images.icon}
@@ -126,13 +126,13 @@ const Explore = () => {
             resizeMode="cover"
           />
         </View>
-        <TouchableOpacity className="absolute top-12 right-12 z-15 px-1 py-0" onPress={() => { handleNotificationsPress(); setDropdownVisible(false); }}>
+        <TouchableOpacity className="absolute top-9 right-12 z-15 px-1 py-0" onPress={() => { handleNotificationsPress(); setDropdownVisible(false); }}>
           <Image source={icons.bell} className='size-7' tintColor="#FFFFFF" />
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={toggleDropdown}
-          className="absolute top-12 right-2 z-15 py-0"
+          className="absolute top-9 right-2 z-15 py-0"
         >
           <Image source={icons.menu} className="size-7" tintColor="#FFFFFF" />
         </TouchableOpacity>
