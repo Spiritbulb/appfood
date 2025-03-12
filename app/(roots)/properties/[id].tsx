@@ -17,7 +17,6 @@ interface Props {
   onPress?: () => void
 }
 
-
 // ParentComponent.tsx
 const OrderPage = () => {
   const [data, setData] = useState<Models.Document[]>([]);
