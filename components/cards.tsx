@@ -422,6 +422,9 @@ export const OrderCards = ({ item, onPress }: Props) => {
     setPortionAmount(portionAmount + 1);
   };
 
+  const handleOrderPress = () => router.push(`/explore`);
+
+
   const handleDecreasePortion = () => {
     if (portionAmount > 1) {
       setPortionAmount(portionAmount - 1);
@@ -475,7 +478,7 @@ export const OrderCards = ({ item, onPress }: Props) => {
 
         {/* Buttons */}
         <View style={styles.actionContainer}>
-          <TouchableOpacity style={styles.orderButton} onPress={onPress}>
+          <TouchableOpacity style={styles.orderButton} onPress={handleOrderPress}>
             <Text style={styles.orderButtonText}>Confirm Order</Text>
           </TouchableOpacity>
         </View>
