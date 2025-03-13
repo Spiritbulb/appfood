@@ -23,30 +23,42 @@ jobs:
 
           # Customize the message based on the event type
           if [[ "$EVENT_NAME" == "push" ]]; then
-            DESCRIPTION="📥 New push to repository: $REPOSITORY"
+            DESCRIPTION="📥 New push to repository: **$REPOSITORY**"
+            COLOR="5763719"  # Green
+            THUMBNAIL="https://src.spiritbulb.com/SPIRIT%20(1).png"  # GitHub logo
           elif [[ "$EVENT_NAME" == "pull_request" ]]; then
-            DESCRIPTION="🔀 Pull request ${{ github.event.action }}: ${{ github.event.pull_request.title }}"
+            DESCRIPTION="🔀 Pull request **${{ github.event.action }}**: [${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }})"
+            COLOR="3447003"  # Blue
+            THUMBNAIL="https://src.spiritbulb.com/SPIRIT%20(1).png"  # GitHub logo
           elif [[ "$EVENT_NAME" == "issues" ]]; then
-            DESCRIPTION="⚠️ Issue ${{ github.event.action }}: ${{ github.event.issue.title }}"
+            DESCRIPTION="⚠️ Issue **${{ github.event.action }}**: [${{ github.event.issue.title }}](${{ github.event.issue.html_url }})"
+            COLOR="15548997"  # Red
+            THUMBNAIL="https://src.spiritbulb.com/SPIRIT%20(1).png"  # GitHub logo
           else
-            DESCRIPTION="ℹ️ Event '$EVENT_NAME' occurred in repository: $REPOSITORY"
+            DESCRIPTION="ℹ️ Event **$EVENT_NAME** occurred in repository: **$REPOSITORY**"
+            COLOR="5814783"  # Purple
+            THUMBNAIL="https://src.spiritbulb.com/SPIRIT%20(1).png"  # GitHub logo
           fi
 
           # Generate the JSON payload
           PAYLOAD=$(jq -n \
             --arg title "Repository Update" \
             --arg description "$DESCRIPTION" \
-            --arg color "5814783" \
+            --arg color "$COLOR" \
             --arg eventType "$EVENT_NAME" \
             --arg repository "$REPOSITORY" \
             --arg triggeredBy "$ACTOR" \
             --arg timestamp "$TIMESTAMP" \
+            --arg thumbnail "$THUMBNAIL" \
             '{
               embeds: [
                 {
                   title: $title,
                   description: $description,
                   color: ($color | tonumber),
+                  thumbnail: {
+                    url: $thumbnail
+                  },
                   fields: [
                     {
                       name: "Event Type",
@@ -65,7 +77,8 @@ jobs:
                     }
                   ],
                   footer: {
-                    text: "GitHub Actions"
+                    text: "Spiritbulb • Repo Updates",
+                    icon_url: "https://src.spiritbulb.com/SPIRIT%20(1).png"
                   },
                   timestamp: $timestamp
                 }
