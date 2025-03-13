@@ -13,13 +13,13 @@ jobs:
   notify-discord:
     runs-on: ubuntu-latest
     steps:
-      - name: Generate Discord Embed JSON
-        id: generate_embed
+      - name: Generate Discord Payload
+        id: generate_payload
         run: |
           EVENT_NAME="${{ github.event_name }}"
           REPOSITORY="${{ github.repository }}"
           ACTOR="${{ github.actor }}"
-          TIMESTAMP="${{ github.event.repository.updated_at }}"
+          TIMESTAMP="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
           # Customize the message based on the event type
           if [[ "$EVENT_NAME" == "push" ]]; then
@@ -33,7 +33,7 @@ jobs:
           fi
 
           # Generate the JSON payload
-          EMBED_JSON=$(jq -n \
+          PAYLOAD=$(jq -n \
             --arg title "Repository Update" \
             --arg description "$DESCRIPTION" \
             --arg color "5814783" \
@@ -73,11 +73,11 @@ jobs:
             }')
 
           # Output the JSON for the next step
-          echo "::set-output name=embed_json::$EMBED_JSON"
+          echo "PAYLOAD=$PAYLOAD" >> $GITHUB_ENV
 
       - name: Send Discord Notification
-        uses: Ilshidur/action-discord@master
-        with:
-          args: '${{ steps.generate_embed.outputs.embed_json }}'
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '${{ env.PAYLOAD }}' \
+            "${{ secrets.DISCORD_WEBHOOK_URL }}"
