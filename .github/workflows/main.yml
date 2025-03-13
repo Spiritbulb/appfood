@@ -13,47 +13,71 @@ jobs:
   notify-discord:
     runs-on: ubuntu-latest
     steps:
-      - name: Determine Event Message
-        id: event_message
+      - name: Generate Discord Embed JSON
+        id: generate_embed
         run: |
-          if [[ "${{ github.event_name }}" == "push" ]]; then
-            echo "::set-output name=message::📥 New push to repository: ${{ github.repository }}"
-          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "::set-output name=message::🔀 Pull request ${{ github.event.action }}: ${{ github.event.pull_request.title }}"
-          elif [[ "${{ github.event_name }}" == "issues" ]]; then
-            echo "::set-output name=message::⚠️ Issue ${{ github.event.action }}: ${{ github.event.issue.title }}"
+          EVENT_NAME="${{ github.event_name }}"
+          REPOSITORY="${{ github.repository }}"
+          ACTOR="${{ github.actor }}"
+          TIMESTAMP="${{ github.event.repository.updated_at }}"
+
+          # Customize the message based on the event type
+          if [[ "$EVENT_NAME" == "push" ]]; then
+            DESCRIPTION="📥 New push to repository: $REPOSITORY"
+          elif [[ "$EVENT_NAME" == "pull_request" ]]; then
+            DESCRIPTION="🔀 Pull request ${{ github.event.action }}: ${{ github.event.pull_request.title }}"
+          elif [[ "$EVENT_NAME" == "issues" ]]; then
+            DESCRIPTION="⚠️ Issue ${{ github.event.action }}: ${{ github.event.issue.title }}"
           else
-            echo "::set-output name=message::ℹ️ Event '${{ github.event_name }}' occurred in repository: ${{ github.repository }}"
+            DESCRIPTION="ℹ️ Event '$EVENT_NAME' occurred in repository: $REPOSITORY"
           fi
+
+          # Generate the JSON payload
+          EMBED_JSON=$(jq -n \
+            --arg title "Repository Update" \
+            --arg description "$DESCRIPTION" \
+            --arg color "5814783" \
+            --arg eventType "$EVENT_NAME" \
+            --arg repository "$REPOSITORY" \
+            --arg triggeredBy "$ACTOR" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              embeds: [
+                {
+                  title: $title,
+                  description: $description,
+                  color: ($color | tonumber),
+                  fields: [
+                    {
+                      name: "Event Type",
+                      value: $eventType,
+                      inline: true
+                    },
+                    {
+                      name: "Repository",
+                      value: $repository,
+                      inline: true
+                    },
+                    {
+                      name: "Triggered By",
+                      value: $triggeredBy,
+                      inline: true
+                    }
+                  ],
+                  footer: {
+                    text: "GitHub Actions"
+                  },
+                  timestamp: $timestamp
+                }
+              ]
+            }')
+
+          # Output the JSON for the next step
+          echo "::set-output name=embed_json::$EMBED_JSON"
 
       - name: Send Discord Notification
         uses: Ilshidur/action-discord@master
         with:
-          args: |
-            {
-              "embeds": [
-                {
-                  "title": "Repository Update",
-                  "description": "${{ steps.event_message.outputs.message }}",
-                  "color": 5814783,
-                  "fields": [
-                    {
-                      "name": "Triggered By",
-                      "value": "${{ github.actor }}",
-                      "inline": true
-                    },
-                    {
-                      "name": "Repository",
-                      "value": "${{ github.repository }}",
-                      "inline": true
-                    }
-                  ],
-                  "footer": {
-                    "text": "GitHub Actions"
-                  },
-                  "timestamp": "${{ github.event.repository.updated_at }}"
-                }
-              ]
-            }
+          args: '${{ steps.generate_embed.outputs.embed_json }}'
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
