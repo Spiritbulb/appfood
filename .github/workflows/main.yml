@@ -76,12 +76,12 @@ jobs:
           echo "Generated Payload:"
           echo "$PAYLOAD"
 
-          # Set the payload as an output for the next step
-          echo "payload=$PAYLOAD" >> $GITHUB_OUTPUT
+          # Save the payload to a file
+          echo "$PAYLOAD" > payload.json
 
       - name: Send Discord Notification
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
-            -d '${{ steps.generate_payload.outputs.payload }}' \
+            -d @payload.json \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
