@@ -274,14 +274,14 @@ export const OrderCards = ({ item, onPress }: Props) => {
   const styles = StyleSheet.create({
     safeArea: {
       flex: 0,
-      backgroundColor: '#FFFFFF',
+      backgroundColor: '#666',
       paddingHorizontal: 20,
       paddingVertical: 20,
-      paddingBottom: 100,
+      paddingBottom: 90,
     },
     cardContainer: {
       width: '100%',
-      height: '100%',
+      height: '32%',
       borderRadius: 12,
       backgroundColor: '#FFFFFF',
       shadowColor: '#000',
@@ -289,7 +289,7 @@ export const OrderCards = ({ item, onPress }: Props) => {
       shadowOpacity: 0.4,
       shadowRadius: 6,
       elevation: 3, // For Android
-      padding: 20,
+      padding: 25,
     },
     ratingBadge: {
       flexDirection: 'row',
@@ -319,16 +319,16 @@ export const OrderCards = ({ item, onPress }: Props) => {
     },
     imageContainer: {
       width: '100%',
-      height: 60,
+      height: '60%',
       borderRadius: 12,
       overflow: 'hidden',
     },
     foodImage: {
       width: '100%',
-      height: '55%',
+      height: '100%',
     },
     foodDetails: {
-      marginTop: 16,
+      marginTop: 5,
     },
     foodTitle: {
       fontSize: 20,

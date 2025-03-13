@@ -38,13 +38,11 @@ const OrderPage = () => {
   }, []);
 
   return (
-    <SafeAreaView>
-      <View>
-        {data.map((item) => (
-          <OrderCards key={item.$id} item={item} />
-        ))}
-      </View>
-    </SafeAreaView>
+    <View>
+      {data.map((item) => (
+        <OrderCards key={item.$id} item={item} />
+      ))}
+    </View>
   );
 }
 export default OrderPage;;
