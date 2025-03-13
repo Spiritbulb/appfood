@@ -1,2 +1,21 @@
-- name: Discord Reporter
-  uses: TeamGalacticraft/discord-reporter@1.0.0
+name: Discord Notifications
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, closed, reopened]
+  issues:
+    types: [opened, closed, reopened]
+
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord Notification
+        uses: Ilshidur/action-discord@master
+        with:
+          args: 'ℹ️ Repository event: ${{ github.event_name }} in ${{ github.repository }}'
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
