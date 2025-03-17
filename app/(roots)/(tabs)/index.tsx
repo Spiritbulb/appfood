@@ -1,370 +1,247 @@
-import React, { useState } from 'react';
 import {
-  View,
-  TextInput,
-  Alert,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  Image,
-  KeyboardAvoidingView,
-  ScrollView,
-  Platform,
   ActivityIndicator,
-} from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system'; // For handling file uploads
-import { StatusBar } from 'expo-status-bar';
-import * as MediaLibrary from 'expo-media-library';
-import axios from 'axios';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation for navigation
-import { router } from 'expo-router';
+  FlatList,
+  Image,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+  Modal,
+  Keyboard,
+  Dimensions,
+  Animated,
+} from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { router } from "expo-router";
 
-const requestPermissions = async () => {
-  const { status } = await MediaLibrary.requestPermissionsAsync();
-  if (status !== 'granted') {
-    Alert.alert('Permission required', 'Please allow access to your media library to upload images.');
-  }
+import Search from "@/components/search";
+import { HomeCards } from "@/components/cards";
+import NoResults from "@/components/NoResults";
+import { StatusBar } from 'expo-status-bar';
+import images from "@/constants/images";
+import icons from "@/constants/icons";
+import { useGlobalContext } from "@/lib/global-provider";
+
+const { width } = Dimensions.get("window");
+
+const styles = {
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  dropdownMenu: {
+    width: Dimensions.get("window").width * 0.7,
+    height: Dimensions.get("window").height,
+    backgroundColor: '#fff',
+    borderTopleftRadius: 10,
+    borderBottomlefttRadius: 10,
+    padding: 10,
+    position: 'absolute',
+    right: '0',
+  },
 };
 
-// Define the FormData interface
-interface FormData {
-  title: string;
-  image: string; // This will store the image URL
-  portion: string;
-  ingredients: string;
-  description: string;
-  nationality: string;
-  price: string | number;
-}
+const Explore = () => {
+  const [items, setItems] = useState<{ item_id: number; title: string; price: number; image: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const slideAnim = useRef(new Animated.Value(width)).current; // Animation value for dropdown
 
-const MyPosts = () => {
-  const navigation = useNavigation(); // Initialize navigation
-  const [formData, setFormData] = useState<FormData>({
-    title: '',
-    image: '', // This will store the image URL
-    portion: '',
-    ingredients: '',
-    description: '',
-    nationality: '',
-    price: '',
-  });
-  const [selectedImage, setSelectedImage] = useState<string | null>(null); // For preview
-  const [uploading, setUploading] = useState<boolean>(false); // Track upload status
 
-  const handleChange = (name: string, value: string | number) => {
-    setFormData({ ...formData, [name]: value });
+  const fetchFooditems = async () => {
+    try {
+      const response = await fetch('https://plate-pals.handler.spiritbulb.com/api/data');
+      const data = await response.json();
+      setItems(data.results);
+    } catch (error) {
+      console.error('Error fetching food items:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const pickImage = async () => {
-    if (uploading) {
-      Alert.alert('Upload in progress', 'Please wait for the current upload to complete or cancel it by selecting a new image.');
-      return;
-    }
+  useEffect(() => {
+    fetchFooditems();
+  }, []);
 
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission required', 'Please allow access to your media library to upload images.');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images, // Use ImagePicker.MediaTypeOptions.Images
-      allowsEditing: true,
-      aspect: [3, 4],
-      quality: 1,
+  // Track keyboard visibility
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true);
+    });
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false);
+      if (searchResults.length === 0) {
+        setIsSearching(false); // Reset isSearching if no search results
+      }
     });
 
-    if (!result.canceled) {
-      setSelectedImage(result.assets[0].uri); // Set the selected image URI for preview
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, [searchResults]);
+
+  // Handle card press
+  useEffect(() => {
+    if (isDropdownVisible) {
+      Animated.timing(slideAnim, {
+        toValue: 7,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slideAnim, {
+        toValue: width,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
     }
+  }, [isDropdownVisible]);
+  const handleCardPress = (item: any) => {
+    router.push({
+      pathname: '/properties/[id]',
+      params: {
+        id: item.item_id, // Use item.item_id
+        name: item.title,
+        price: item.price,
+        image: item.image,
+      },
+    });
   };
 
-  const uploadImageToWorker = async (imageUri: string) => {
-    try {
-      // Step 1: Read the image file as binary data
-      const file = await FileSystem.readAsStringAsync(imageUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+  const handleNotificationsPress = () => router.push('/properties/myorders');
+  const handleProfilePress = () => router.push('/Profile');
+  const handlePagePress = () => router.push('/explore');
+  const { user } = useGlobalContext();
 
-      // Step 2: Upload the image to the Worker
-      const response = await axios.post(
-        'https://plate-pals.handler.spiritbulb.com/upload-image',
-        { file, fileName: `plate-pals/${Date.now()}.png` }, // Include a unique file name
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (response.status !== 200) {
-        throw new Error('Failed to upload image');
-      }
-
-      // Step 3: Return the public URL of the uploaded image
-      return response.data.fileUrl;
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      throw error;
-    }
+  // Toggle dropdown visibility
+  const toggleDropdown = () => {
+    setDropdownVisible(!isDropdownVisible);
   };
 
-  const handleImageUpload = async () => {
-    if (!selectedImage) {
-      Alert.alert('Error', 'Please select an image first.');
-      return;
-    }
-
-    setUploading(true); // Set uploading status to true
-
-    try {
-      const fileUrl = await uploadImageToWorker(selectedImage);
-      if (fileUrl) {
-        handleChange('image', fileUrl); // Store the image URL in state
-        Alert.alert('Success', 'Image uploaded successfully!');
-      } else {
-        throw new Error('File URL is undefined');
-      }
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      Alert.alert('Error', 'Failed to upload image.');
-    } finally {
-      setUploading(false); // Reset uploading status
-    }
-  };
-
-  const saveFoodItem = async (formData: FormData) => {
-    try {
-      // Save form data to D1 via the Cloudflare Worker
-      const response = await fetch('https://plate-pals.handler.spiritbulb.com/save-form', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save form data');
-      }
-
-      console.log('Food item saved:', response);
-      return response;
-    } catch (error) {
-      console.error('Error saving food item:', error);
-      throw error;
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!formData.title || !formData.image || !formData.portion || !formData.ingredients || !formData.description || !formData.nationality || !formData.price) {
-      Alert.alert('Error', 'Please fill in all fields.');
-      return;
-    }
-
-    try {
-      // Ensure the image URL is included in the form data
-      const formDataWithImage = { ...formData, image: formData.image };
-
-      // Save the form data (including the image URL) to the database
-      await saveFoodItem(formDataWithImage);
-      Alert.alert('Success', 'Food item posted successfully!');
-
-      // Clear the form inputs
-      setFormData({
-        title: '',
-        image: '',
-        portion: '',
-        ingredients: '',
-        description: '',
-        nationality: '',
-        price: '',
-      });
-      setSelectedImage(null); // Clear the selected image
-
-      // Redirect to the Explore page
-
-      router.push('/explore'); // Replace 'Explore' with the actual name of your Explore screen
-    } catch (error) {
-      console.error('Error posting item:', error);
-      Alert.alert('Error', 'Failed to post food item.');
+  // Handle search results from the Search component
+  const handleSearchResults = (response: any) => {
+    if (response.success) {
+      setSearchResults(response.results);
+      setIsSearching(response.results.length > 0 || isKeyboardVisible);
+    } else {
+      setSearchResults([]);
+      setIsSearching(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
-    >
+    <SafeAreaView className="h-full bg-white">
       <StatusBar backgroundColor="#500000" />
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-      >
-        {selectedImage ? (
-          <View style={styles.foodCardPreview}>
-            <Image
-              source={{ uri: selectedImage }}
-              style={styles.image}
-              resizeMode="contain"
-            />
-            <View style={styles.overlay}>
-              <Text style={styles.foodTitle}>{formData.title || 'Food Name'}</Text>
-              <Text style={styles.foodDetail}>{formData.nationality || 'Nationality'}</Text>
-              <Text style={styles.foodDetail}>{formData.ingredients || 'Ingredients'}</Text>
-              <Text style={styles.foodDetail}>{formData.description || 'Description'}</Text>
-              <Text style={styles.foodDetail}>{formData.portion || 'Portion Size'}</Text>
-              <Text style={styles.foodPrice}>Ksh {formData.price || 'Price'}</Text>
-            </View>
-          </View>
-        ) : (
-          <Text style={styles.placeholderText}>No image selected</Text>
-        )}
-        <TouchableOpacity style={styles.button} onPress={pickImage} disabled={uploading}>
-          <Text style={styles.buttonText}>Select Image</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleImageUpload} disabled={uploading}>
-          {uploading ? (
-            <ActivityIndicator color="#000" />
-          ) : (
-            <Text style={styles.buttonText}>Upload Image</Text>
-          )}
-        </TouchableOpacity>
-        <TextInput
-          style={styles.input}
-          placeholder="Food Item Name"
-          value={formData.title}
-          onChangeText={(text) => handleChange('title', text)}
-          editable={!uploading}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Portion"
-          value={formData.portion}
-          onChangeText={(text) => handleChange('portion', text)}
-          editable={!uploading}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Ingredients"
-          value={formData.ingredients}
-          onChangeText={(text) => handleChange('ingredients', text)}
-          editable={!uploading}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Description"
-          value={formData.description}
-          onChangeText={(text) => handleChange('description', text)}
-          editable={!uploading}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Nationality"
-          value={formData.nationality}
-          onChangeText={(text) => handleChange('nationality', text)}
-          editable={!uploading}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Price"
-          value={formData.price.toString()}
-          onChangeText={(text) => handleChange('price', text)}
-          keyboardType="numeric"
-          editable={!uploading}
-        />
-        <View style={{ paddingBottom: 90 }}>
-          <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={uploading}>
-            <Text style={styles.buttonText}>Post Item</Text>
-          </TouchableOpacity>
+      <View className="h-20 mt-4 bg-[#500000]">
+        <View className="flex justify-left items-left mt-6 px-6 py-2">
+          <Image
+            source={images.icon}
+            className="w-20 h-10 ml-1 rounded-lg"
+            resizeMode="cover"
+          />
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        <TouchableOpacity className="absolute top-9 right-12 z-15 px-1 py-0" onPress={() => { handleNotificationsPress(); setDropdownVisible(false); }}>
+          <Image source={icons.bell} className='size-7' tintColor="#FFFFFF" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={toggleDropdown}
+          className="absolute top-9 right-2 z-15 py-0"
+        >
+          <Image source={icons.menu} className="size-7" tintColor="#FFFFFF" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Dropdown Menu */}
+      <Modal
+        transparent={true}
+        visible={isDropdownVisible}
+        onRequestClose={() => setDropdownVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setDropdownVisible(false)}
+        >
+          <Animated.View
+            style={[
+              styles.dropdownMenu,
+              { transform: [{ translateX: slideAnim }] },
+            ]}
+          >
+            <View className="px-5">
+              <View className='flex flex-row items-center justify-between mt-5'>
+                <TouchableOpacity onPress={() => { handleProfilePress(); setDropdownVisible(false); }}>
+                  <View className='flex flex-row items-left justify-left'>
+                    <Image source={{ uri: user?.picture }} className='size-12 rounded-full' />
+                    <View className='flex flex-col items-start ml-2 justify-center'>
+                      <Text className='text-xs font-rubik text-yellow-700'>Good Morning</Text>
+                      <Text className='text-base font-rubik-medium text-black-300'>{user?.name}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Animated.View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* Search Component */}
+      <View className="w-100 h-20 ml-1 rounded-lg">
+        <Search onSearchResults={handleSearchResults} />
+      </View>
+
+      {/* Display Search Results or Food Items */}
+      {isSearching ? (
+        // Display search results
+        <FlatList
+          data={searchResults}
+          keyExtractor={(item) => item.item_id.toString()} // Use item.item_id as the key
+          renderItem={({ item }) => (
+            <View style={{ width }}>
+              <HomeCards item={item} onPress={() => handleCardPress(item)} />
+            </View>
+          )}
+          contentContainerClassName="pb-32"
+          horizontal
+          pagingEnabled
+          contentContainerStyle={{ paddingBottom: 80 }}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <NoResults />
+          }
+        />
+      ) : (
+        // Display all food items
+        <FlatList
+          data={items}
+          keyExtractor={(item) => item.item_id.toString()} // Use item.item_id as the key
+          renderItem={({ item }) => (
+            <View style={{ width }}>
+              <HomeCards item={item} onPress={() => handleCardPress(item)} />
+            </View>
+          )}
+          contentContainerClassName="pb-32"
+          horizontal
+          pagingEnabled
+          contentContainerStyle={{ paddingBottom: 80 }}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            loading ? (
+              <ActivityIndicator size="large" className="text-primary-300 mt-5" />
+            ) : (
+              <NoResults />
+            )
+          }
+        />
+      )}
+    </SafeAreaView>
   );
 };
 
-export default MyPosts;
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    marginTop: 20,
-    padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#f8f8f8',
-  },
-  input: {
-    height: 50,
-    borderColor: '#500000',
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-  },
-  button: {
-    width: '100%',
-    paddingVertical: 12,
-    backgroundColor: '#eab620',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-    marginBottom: 15,
-    paddingBottom: 20,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  placeholderText: {
-    textAlign: 'center',
-    color: '#888',
-    marginBottom: 15,
-  },
-  foodCardPreview: {
-    position: 'relative',
-    width: '100%',
-    alignItems: 'center',
-    marginBottom: 25,
-  },
-  image: {
-    width: '100%',
-    height: 350,
-    borderRadius: 12,
-    resizeMode: 'cover',
-  },
-  overlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 40,
-    right: 40,
-    top: 0,
-    padding: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderBottomLeftRadius: 2,
-    borderBottomRightRadius: 12,
-  },
-  foodTitle: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 5,
-  },
-  foodDetail: {
-    fontSize: 15,
-    color: '#fff',
-    marginBottom: 5,
-  },
-  foodPrice: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#FFf',
-  },
-});
+export default Explore;

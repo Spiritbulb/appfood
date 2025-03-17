@@ -2,47 +2,84 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  Image,
-  TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
+  ActivityIndicator,
+  StyleSheet,
 } from 'react-native';
-import { useLocalSearchParams, Stack, router } from 'expo-router';
-import { HomeCards, OrderCards } from '@/components/cards';
-import { Databases, Models } from 'react-native-appwrite';
-import { databases } from '@/lib/appwrite';
+import { useLocalSearchParams, Stack } from 'expo-router';
+import { OrderCards } from '@/components/cards'; // Adjust the import path
 
-
-interface Props {
-  item: Models.Document;
-  onPress?: () => void
-}
-
-// ParentComponent.tsx
 const OrderPage = () => {
-  const [data, setData] = useState<Models.Document[]>([]);
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const { id } = useLocalSearchParams();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await databases.listDocuments(
-          '679bbd65000ae52d302b',
-          '679bc335000d2a9c630b'
-        );
-        setData(response.documents); // Ensure this contains all required fields
+        const response = await fetch(`https://plate-pals.handler.spiritbulb.com/api/specific-data?query=${id}`);
+        const result = await response.json();
+        if (result.success && result.results.length > 0) {
+          setData(result.results[0]); // Extract the first item from the results array
+        } else {
+          setData(null); // No data found
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchData();
-  }, []);
+    if (id) {
+      fetchData();
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#500000" />
+      </View>
+    );
+  }
+
+  if (!data) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.noDataText}>No data found.</Text>
+      </View>
+    );
+  }
 
   return (
-    <View>
-      {data.map((item) => (
-        <OrderCards key={item.$id} item={item} />
-      ))}
-    </View>
+    <SafeAreaView style={styles.container}>
+      <Stack.Screen options={{ title: 'Order Details' }} />
+      <View style={styles.content}>
+        <OrderCards item={data} />
+      </View>
+    </SafeAreaView>
   );
-}
-export default OrderPage;;
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  content: {
+    flex: 1,
+    padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noDataText: {
+    fontSize: 18,
+    color: '#666',
+  },
+});
+
+export default OrderPage;

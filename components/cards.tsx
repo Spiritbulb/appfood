@@ -4,6 +4,7 @@ import icons from '@/constants/icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Animated } from 'react-native';
 import { router } from 'expo-router';
+import { number } from 'yargs';
 
 interface Props {
   item: any;
@@ -171,7 +172,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
     return null;
   }
 
-  const handleCardPress = () => router.push(`/properties/${item.id}`);
+  const handleCardPress = () => router.push(`/properties/${item?.item_id}`);
 
   const handlePressIn = () => {
     Animated.timing(scaleValue, {
@@ -232,13 +233,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
             <Text style={styles.portionValue}>
               {item?.portions || 'N/A'}
             </Text>
-          </View>
-          <View style={styles.priceContainer}>
-            <Text style={styles.priceLabel}>Price:</Text>
-            <Text style={styles.priceValue}>
-              Ksh {item?.price || 'N/A'}
-            </Text>
-          </View>
+          </View> {/*remove price from database */}
         </View>
 
         {/* Order Button and Favorite Icon */}
@@ -269,19 +264,22 @@ export const HomeCards = ({ item, onPress }: Props) => {
   );
 };
 
+
+
+
 export const OrderCards = ({ item, onPress }: Props) => {
   // Define styles at the top of the file
   const styles = StyleSheet.create({
     safeArea: {
       flex: 0,
-      backgroundColor: '#666',
-      paddingHorizontal: 20,
+      backgroundColor: '#fff',
+      paddingHorizontal: 5,
       paddingVertical: 20,
       paddingBottom: 90,
     },
     cardContainer: {
       width: '100%',
-      height: '32%',
+      height: '100%',
       borderRadius: 12,
       backgroundColor: '#FFFFFF',
       shadowColor: '#000',
@@ -306,16 +304,6 @@ export const OrderCards = ({ item, onPress }: Props) => {
       shadowOpacity: 0.1,
       shadowRadius: 2,
       elevation: 2, // For Android
-    },
-    starIcon: {
-      width: 14,
-      height: 14,
-    },
-    ratingText: {
-      fontSize: 14,
-      fontWeight: 'bold',
-      color: '#FFD700',
-      marginLeft: 4,
     },
     imageContainer: {
       width: '100%',
@@ -434,24 +422,19 @@ export const OrderCards = ({ item, onPress }: Props) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.cardContainer}>
-        {/* Rating Badge */}
-        <View style={styles.ratingBadge}>
-          <Image source={icons.star} style={styles.starIcon} />
-          <Text style={styles.ratingText}>{item.rating}</Text>
-        </View>
 
-        {/* Food Image */}
+        // Food Image
         <View style={styles.imageContainer}>
           <Image source={{ uri: item.image }} style={styles.foodImage} />
         </View>
 
-        {/* Food Details */}
+        // Food Details
         <View style={styles.foodDetails}>
           <Text style={styles.foodTitle}>{item.title}</Text>
           <Text style={styles.foodSubtitle}>{item.nationality}</Text>
           <Text style={styles.foodSubtitle}>{item.ingredients}</Text>
 
-          {/* Portion Adjuster */}
+          // Portion Adjuster
           <View style={styles.portionContainer}>
             <Text style={styles.portionLabel}>PORTION =</Text>
             <TouchableOpacity
@@ -469,14 +452,13 @@ export const OrderCards = ({ item, onPress }: Props) => {
             </TouchableOpacity>
           </View>
 
-          {/* Total Price */}
+
           <View style={styles.priceContainer}>
             <Text style={styles.priceLabel}>TOTAL PRICE =</Text>
             <Text style={styles.priceValue}>${totalPrice}</Text>
           </View>
         </View>
 
-        {/* Buttons */}
         <View style={styles.actionContainer}>
           <TouchableOpacity style={styles.orderButton} onPress={handleOrderPress}>
             <Text style={styles.orderButtonText}>Confirm Order</Text>
