@@ -1,0 +1,100 @@
+name: Discord Notifications
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, closed, reopened]
+  issues:
+    types: [opened, closed, reopened]
+
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Discord Payload
+        id: generate_payload
+        run: |
+          EVENT_NAME="${{ github.event_name }}"
+          REPOSITORY="${{ github.repository }}"
+          ACTOR="${{ github.actor }}"
+          TIMESTAMP="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+          # Customize the message based on the event type
+          if [[ "$EVENT_NAME" == "push" ]]; then
+            DESCRIPTION="📥 New push to repository: **$REPOSITORY**"
+            COLOR="5763719"  # Green
+            THUMBNAIL="https://src.spiritbulb.com/SPIRIT%20(1).png"  # GitHub logo
+          elif [[ "$EVENT_NAME" == "pull_request" ]]; then
+            DESCRIPTION="🔀 Pull request **${{ github.event.action }}**: [${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }})"
+            COLOR="3447003"  # Blue
+            THUMBNAIL="https://src.spiritbulb.com/SPIRIT%20(1).png"  # GitHub logo
+          elif [[ "$EVENT_NAME" == "issues" ]]; then
+            DESCRIPTION="⚠️ Issue **${{ github.event.action }}**: [${{ github.event.issue.title }}](${{ github.event.issue.html_url }})"
+            COLOR="15548997"  # Red
+            THUMBNAIL="https://src.spiritbulb.com/SPIRIT%20(1).png"  # GitHub logo
+          else
+            DESCRIPTION="ℹ️ Event **$EVENT_NAME** occurred in repository: **$REPOSITORY**"
+            COLOR="5814783"  # Purple
+            THUMBNAIL="https://src.spiritbulb.com/SPIRIT%20(1).png"  # GitHub logo
+          fi
+
+          # Generate the JSON payload
+          PAYLOAD=$(jq -n \
+            --arg title "Repository Update" \
+            --arg description "$DESCRIPTION" \
+            --arg color "$COLOR" \
+            --arg eventType "$EVENT_NAME" \
+            --arg repository "$REPOSITORY" \
+            --arg triggeredBy "$ACTOR" \
+            --arg timestamp "$TIMESTAMP" \
+            --arg thumbnail "$THUMBNAIL" \
+            '{
+              embeds: [
+                {
+                  title: $title,
+                  description: $description,
+                  color: ($color | tonumber),
+                  thumbnail: {
+                    url: $thumbnail
+                  },
+                  fields: [
+                    {
+                      name: "Event Type",
+                      value: $eventType,
+                      inline: true
+                    },
+                    {
+                      name: "Repository",
+                      value: $repository,
+                      inline: true
+                    },
+                    {
+                      name: "Triggered By",
+                      value: $triggeredBy,
+                      inline: true
+                    }
+                  ],
+                  footer: {
+                    text: "Spiritbulb • Repo Updates",
+                    icon_url: "https://src.spiritbulb.com/SPIRIT%20(1).png"
+                  },
+                  timestamp: $timestamp
+                }
+              ]
+            }')
+
+          # Output the JSON for debugging
+          echo "Generated Payload:"
+          echo "$PAYLOAD"
+
+          # Save the payload to a file
+          echo "$PAYLOAD" > payload.json
+
+      - name: Send Discord Notification
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d @payload.json \
+            "${{ secrets.DISCORD_WEBHOOK_URL }}"
