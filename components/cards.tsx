@@ -13,8 +13,8 @@ interface Props {
 export const HomeCards = ({ item, onPress }: Props) => {
   const styles = StyleSheet.create({
     cardContainer: {
-      width: '94%',
-      height: '95%',
+      width: '100%',
+      height: '40%',
       borderRadius: 12,
       backgroundColor: '#fff',
       shadowColor: '#000',
@@ -22,16 +22,18 @@ export const HomeCards = ({ item, onPress }: Props) => {
       justifyContent: 'center',
       shadowOpacity: 0.4,
       shadowRadius: 6,
-      elevation: 3, // For Android
-      padding: 20,
+      elevation: 0, // For Android
+      padding: 0,
       left: 9,
-      top: 7,
+      right: 9,
+      bottom: 0,
+      top: 1,
     },
     ratingBadge: {
       flexDirection: 'row',
       alignItems: 'center',
       position: 'absolute',
-      top: 30,
+      top: 3,
       right: 30,
       backgroundColor: 'rgba(100, 98, 96, 0.7)',
       padding: 8,
@@ -54,11 +56,11 @@ export const HomeCards = ({ item, onPress }: Props) => {
       marginLeft: 4,
     },
     foodImage: {
-      width: '100%',
-      height: '55%',
+      width: '95%',
+      height: 500,
     },
     foodDetails: {
-      marginTop: 16,
+      marginTop: 10,
     },
     foodTitle: {
       fontSize: 20,
@@ -90,11 +92,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       fontWeight: '600',
       color: '#333',
     },
-    portionPriceContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: 10,
-    },
+   
     actionContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -103,8 +101,8 @@ export const HomeCards = ({ item, onPress }: Props) => {
     },
     orderButton: {
       flex: 1,
-      paddingVertical: 12,
-      borderRadius: 8,
+      paddingVertical: 10,
+      borderRadius: 80,
       backgroundColor: '#eab620',
       alignItems: 'center',
       shadowColor: '#FFD700',
@@ -123,8 +121,10 @@ export const HomeCards = ({ item, onPress }: Props) => {
       padding: 8,
     },
     favoriteIcon: {
-      width: 24,
+      width: 20,
       height: 24,
+      marginLeft: 8,
+      marginRight: 8,
     },
   });
 
@@ -196,7 +196,6 @@ export const HomeCards = ({ item, onPress }: Props) => {
         </Text>
 
         {/* Portion and Price */}
-        <View style={styles.portionPriceContainer}>
           <View style={styles.portionContainer}>
             <Text style={styles.portionLabel}>Portion:</Text>
             <Text style={styles.portionValue}>
@@ -228,7 +227,6 @@ export const HomeCards = ({ item, onPress }: Props) => {
             />
           </TouchableOpacity>
         </View>
-      </View>
     </Animated.View>
   );
 };
