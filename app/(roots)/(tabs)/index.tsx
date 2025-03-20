@@ -208,33 +208,33 @@ const Explore = () => {
 
     const performLogout = async () => {
       try {
-          await logout(); // Perform the logout operation
-  
-          // Display a custom alert with a button linking to the website
-          Alert.alert(
-              "You're logged out!",
-              "To logout of your Spiritbulb account, visit spiritbulb.com",
-              [
-                  {
-                      text: "Visit Spiritbulb",
-                      onPress: () => {
-                          window.open("https://www.spiritbulb.com", "_blank"); // Open the website in a new tab
-                      },
-                  },
-                  {
-                      text: "OK",
-                      onPress: () => {
-                          // Redirect to the sign-in page
-                          
-                          router.push('/sign-in');
-                      },
-                  },
-              ]
-          );
+        await logout(); // Perform the logout operation
+
+        // Display a custom alert with a button linking to the website
+        Alert.alert(
+          "You're logged out!",
+          "To logout of your Spiritbulb account, visit spiritbulb.com",
+          [
+            {
+              text: "Visit Spiritbulb",
+              onPress: () => {
+                window.open("https://www.spiritbulb.com", "_blank"); // Open the website in a new tab
+              },
+            },
+            {
+              text: "OK",
+              onPress: () => {
+                // Redirect to the sign-in page
+
+                router.push('/sign-in');
+              },
+            },
+          ]
+        );
       } catch (error) {
-          console.error("Logout failed:", error);
+        console.error("Logout failed:", error);
       }
-  };
+    };
 
     performLogout();
   };
@@ -354,12 +354,14 @@ const Explore = () => {
           data={items}
           keyExtractor={(item) => item.item_id.toString()}
           renderItem={({ item }) => (
-            <View>
+            <View style={{ marginBottom: 3 }}>
               <HomeCards item={item} onPress={() => handleCardPress(item)} />
             </View>
           )}
-          onEndReached={fetchMoreData} // Trigger when near the end of the list
-          onEndReachedThreshold={0.5} // Trigger when 50% of the last item is visible
+          onEndReached={fetchMoreData}
+          contentContainerStyle={{ gap: 50 }}
+          contentContainerStyle={{ gap: 50 }}
+          onEndReachedThreshold={0.1}
           ListEmptyComponent={
             loading ? (
               <ActivityIndicator size="large" className="text-primary-300 mt-5" />
