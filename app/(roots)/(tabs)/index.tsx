@@ -198,6 +198,7 @@ const Explore = () => {
   }
 
   const handleItemPress = () => router.push(`/addpost`);
+  const handleHomePress = () => router.push(`/`);
   const handleBestItemPress = () => router.push(`/properties/myfavourites`);
   const handleChartsPress = () => router.push(`/properties/dm`);
 
@@ -287,7 +288,7 @@ const Explore = () => {
               </TouchableOpacity>
             </View>
             <View>
-              <TouchableOpacity style={styles.Button} onPress={handleItemPress} >
+              <TouchableOpacity style={styles.Button} onPress={handleHomePress} >
                 <Text style={styles.ButtonText}>Home</Text>
               </TouchableOpacity>
             </View>
