@@ -86,6 +86,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       borderBottomLeftRadius: 12,
       borderBottomRightRadius: 12,
       marginTop: 4,
+
     },
     orderButton: {
       flex: 1,
@@ -175,11 +176,11 @@ export const HomeCards = ({ item, onPress }: Props) => {
             Posted by: {item?.user_id || "N/A"}
           </Text>
 
-          {/* Portion and Price */}
+          {/* Portion  */}
           <View style={{ flexDirection: "row", marginTop: 8 }}>
             <Text style={styles.foodSubtitle}>Portion: {item?.portions || "N/A"}</Text>
             <Text style={[styles.foodSubtitle, { marginLeft: 16 }]}>
-              Price: ${item?.price || "N/A"}
+        
             </Text>
           </View>
         </View>
