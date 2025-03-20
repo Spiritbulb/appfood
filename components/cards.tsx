@@ -14,7 +14,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
   const styles = StyleSheet.create({
     cardContainer: {
       width: '94%',
-      height: '95%',
+      height: '96%',
       borderRadius: 12,
       backgroundColor: '#fff',
       shadowColor: '#000',
@@ -23,9 +23,9 @@ export const HomeCards = ({ item, onPress }: Props) => {
       shadowOpacity: 0.4,
       shadowRadius: 6,
       elevation: 3, // For Android
-      padding: 20,
+      padding: 30,
       left: 9,
-      top: 7,
+      marginTop: 17,
     },
     ratingBadge: {
       flexDirection: 'row',
@@ -56,6 +56,8 @@ export const HomeCards = ({ item, onPress }: Props) => {
     foodImage: {
       width: '100%',
       height: '55%',
+      marginTop: 16,
+      borderRadius: 12,
     },
     foodDetails: {
       marginTop: 16,
@@ -113,6 +115,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       shadowRadius: 4,
       elevation: 3, // For Android
       marginRight: 16,
+      marginBottom: 16,
     },
     orderButtonText: {
       fontSize: 16,
@@ -179,7 +182,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
         <Text style={styles.foodTitle}>
           {item?.title || 'No Title'}
         </Text>
-        
+
         <Text style={styles.foodSubtitle}>
           {item?.nationality || 'N/A'}
         </Text>
