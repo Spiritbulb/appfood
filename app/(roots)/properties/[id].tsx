@@ -9,6 +9,7 @@ import {
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { OrderCards } from '@/components/cards'; // Adjust the import path
 
+
 const OrderPage = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -17,7 +18,7 @@ const OrderPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`https://plate-pals.handler.spiritbulb.com/api/specific-data?query=${id}`);
+        const response = await fetch(`https://plate-pals.handler.spiritbulb.com/api/ordered-data?query=${id}`);
         const result = await response.json();
         if (result.success && result.results.length > 0) {
           setData(result.results[0]); // Extract the first item from the results array

@@ -6,7 +6,7 @@ import icons from '@/constants/icons';
 
 interface Props {
   item: any;
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 export const HomeCards = ({ item, onPress }: Props) => {
