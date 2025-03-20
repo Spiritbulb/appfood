@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Animated, Easing } fro
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+
 import icons from '@/constants/icons';
 
 interface Props {
@@ -68,6 +69,11 @@ export const HomeCards = ({ item, onPress }: Props) => {
       fontSize: 14,
       color: '#666',
       marginTop: 4,
+    },
+    user: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 10,
     },
     portionContainer: {
       flexDirection: 'row',
@@ -173,6 +179,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
         <Text style={styles.foodTitle}>
           {item?.title || 'No Title'}
         </Text>
+        
         <Text style={styles.foodSubtitle}>
           {item?.nationality || 'N/A'}
         </Text>
@@ -181,6 +188,11 @@ export const HomeCards = ({ item, onPress }: Props) => {
         </Text>
         <Text style={styles.foodSubtitle}>
           {item?.description || 'N/A'}
+        </Text>
+        <Text style={styles.user}>
+          <Text style={styles.foodSubtitle}>
+            {item?.user_id || 'N/A'}
+          </Text>
         </Text>
 
         {/* Portion and Price */}
@@ -347,7 +359,14 @@ export const OrderCards = ({ item, onPress }: Props) => {
     }
   };
 
-  const handleOrderPress = () => router.push('/');
+  const handleOrderPress = () => {
+    try {
+      // Navigate to the chat screen with the recipientId (user_id) as a parameter
+      router.push(`/(roots)/(tabs)/dm?recepientId=${item?.user_id}`);
+    } catch (error) {
+      console.error('Error navigating to chat screen:', error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -381,11 +400,6 @@ export const OrderCards = ({ item, onPress }: Props) => {
             </TouchableOpacity>
           </View>
 
-          {/* Price */}
-          <View style={styles.priceContainer}>
-            <Text style={styles.priceLabel}>TOTAL PRICE =</Text>
-            <Text style={styles.priceValue}>${totalPrice}</Text>
-          </View>
         </View>
 
         {/* Order Button */}

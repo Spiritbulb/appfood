@@ -1,40 +1,76 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useGlobalContext } from '@/lib/global-provider';
+import { useLocalSearchParams } from 'expo-router'; // Use useLocalSearchParams to access query params
 
-import { RouteProp } from '@react-navigation/native';
-
-type ChatScreenRouteProp = RouteProp<{ params: { recipientId: string } }, 'params'>;
-
-const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
+const ChatScreen = () => {
   const { user } = useGlobalContext();
-  interface Message {
-    from: string;
-    text: string;
-    timestamp: number;
-  }
-  
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<{ from: string; text: string; timestamp: string }[]>([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(true);
   const socket = useRef<WebSocket | null>(null);
 
-  // Safely extract recipientId from route.params
-  let recipientId;
-  try {
-    recipientId = route.params?.recipientId;
-  } catch (error) {
-    console.error('Error extracting recipientId from route.params:', error);
-    recipientId = null;
-  }
+  // Use useLocalSearchParams to access query parameters
+  const { recepientId } = useLocalSearchParams(); // Extract recepientId from query params
 
-  // Generate DM channel ID (only if recipientId is available)
-  const dmChannelId = recipientId && user?.email ? [user.email, recipientId].sort().join('-') : null;
+  // Generate DM channel ID (only if recepientId is available)
+  const dmChannelId = recepientId && user?.email ? [user.email, recepientId].sort().join('-') : null;
 
-  // Fetch chat history on mount (only if recipientId is available)
+  // Reconnect
   useEffect(() => {
-    if (!recipientId || !dmChannelId) {
-      setLoading(false); // Skip fetching if recipientId or dmChannelId is missing
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 5;
+  
+    const connectWebSocket = () => {
+      if (!recepientId || !user?.email || !dmChannelId) return;
+  
+      const wsUrl = `wss://chat.spiritbulb.workers.dev/dm/${dmChannelId}/ws?userId=${user.email}`;
+      socket.current = new WebSocket(wsUrl);
+  
+      socket.current.onopen = () => {
+        console.log('WebSocket connection opened');
+        reconnectAttempts = 0; // Reset reconnect attempts on successful connection
+      };
+  
+      socket.current.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          console.log('WebSocket message received:', message);
+          setMessages((prevMessages) => [...prevMessages, message]);
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+      };
+  
+      socket.current.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+  
+      socket.current.onclose = () => {
+        console.log('WebSocket connection closed');
+        if (reconnectAttempts < maxReconnectAttempts) {
+          setTimeout(() => {
+            reconnectAttempts++;
+            console.log(`Reconnecting... Attempt ${reconnectAttempts}`);
+            connectWebSocket();
+          }, 3000); // Retry after 3 seconds
+        }
+      };
+    };
+  
+    connectWebSocket();
+  
+    return () => {
+      if (socket.current) {
+        socket.current.close();
+      }
+    };
+  }, [user?.email, dmChannelId, recepientId]);
+
+  // Fetch chat history on mount (only if recepientId is available)
+  useEffect(() => {
+    if (!recepientId || !dmChannelId) {
+      setLoading(false); // Skip fetching if recepientId or dmChannelId is missing
       return;
     }
 
@@ -51,11 +87,11 @@ const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
     };
 
     fetchChatHistory();
-  }, [dmChannelId, recipientId]);
+  }, [dmChannelId, recepientId]);
 
-  // Connect to WebSocket (only if recipientId and user.email are available)
+  // Connect to WebSocket (only if recepientId and user.email are available)
   useEffect(() => {
-    if (!recipientId || !user?.email || !dmChannelId) return;
+    if (!recepientId || !user?.email || !dmChannelId) return;
 
     const wsUrl = `wss://chat.spiritbulb.workers.dev/dm/${dmChannelId}/ws?userId=${user.email}`;
     socket.current = new WebSocket(wsUrl);
@@ -83,15 +119,15 @@ const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
         socket.current.close();
       }
     };
-  }, [user?.email, dmChannelId, recipientId]);
+  }, [user?.email, dmChannelId, recepientId]);
 
-  // Send a message (only if recipientId is available)
+  // Send a message (only if recepientId is available)
   const sendMessage = () => {
     try {
-      if (socket.current && inputText.trim() && recipientId) {
+      if (socket.current && inputText.trim() && recepientId) {
         const message = {
           type: 'message',
-          to: recipientId,
+          to: recepientId,
           text: inputText,
         };
         socket.current.send(JSON.stringify(message));
@@ -103,7 +139,7 @@ const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
   };
 
   // Render a single chat message
-  const renderMessage = ({ item }: { item: Message }) => (
+  const renderMessage = ({ item }: { item: { from: string; text: string; timestamp: string } }) => (
     <View style={item.from === user?.email ? styles.myMessage : styles.otherMessage}>
       <Text style={styles.messageText}>{item.text}</Text>
       <Text style={styles.messageTime}>
@@ -121,8 +157,8 @@ const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
     );
   }
 
-  // Render fallback if recipientId is missing
-  if (!recipientId) {
+  // Render fallback if recepientId is missing
+  if (!recepientId) {
     return (
       <View style={styles.noChatsContainer}>
         <Text style={styles.noChatsText}>Please select a chat to start messaging.</Text>
@@ -154,12 +190,12 @@ const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
           value={inputText}
           onChangeText={setInputText}
           placeholder="Type a message"
-          editable={!!recipientId} // Disable input if recipientId is missing
+          editable={!!recepientId} // Disable input if recepientId is missing
         />
         <Button
           title="Send"
           onPress={sendMessage}
-          disabled={!recipientId} // Disable button if recipientId is missing
+          disabled={!recepientId} // Disable button if recepientId is missing
         />
       </View>
     </View>
