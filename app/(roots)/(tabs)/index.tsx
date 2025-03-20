@@ -28,7 +28,6 @@ const { width } = Dimensions.get("window");
 const styles = {
   modalScreen: {
     flex: 1,
-    justifyContent: 'flex-end' as 'flex-end',
   },
   modalOverlay: {
     flex: 1,
@@ -50,14 +49,13 @@ const styles = {
     backgroundColor: '#76422b',
     borderRadius: 8,
     alignItems: 'center' as 'center',
-    justifyContent: 'center',
     elevation: 1,
     marginTop: 10,
     top: 10,
   },
   submitButtonText: {
     fontSize: 15,
-    fontWeight: 'bold',
+    fontWeight: 400 as const,
     color: '#fff',
   },
   Button: {
@@ -65,14 +63,13 @@ const styles = {
     padding: 15,
     backgroundColor: 'transparent',
     alignItems: 'flex-start',
-    justifyContent: 'center',
     elevation: 0,
     marginTop: 10,
     top: 20,
   },
   ButtonText: {
     fontSize: 15,
-    fontWeight: '300',
+    fontWeight: 300 as const,
     color: '#000',
   },
 };
@@ -271,7 +268,10 @@ const Explore = () => {
             </View>
             <View>
               <TouchableOpacity style={styles.Button} onPress={handleExitPress} >
-                <Text style={styles.ButtonText}>Log Out</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Image source={icons.logout} className="size-7" tintColor="#000" />
+                  <Text style={styles.ButtonText}>  Log Out</Text>
+                </View>
               </TouchableOpacity>
             </View>
           </Animated.View>
