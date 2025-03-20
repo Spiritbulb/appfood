@@ -2,11 +2,12 @@ import { View, Text, Image, TextInput, TouchableOpacity, ActivityIndicator } fro
 import React, { useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import icons from '@/constants/icons';
-import useDebounce, { useDebouncedCallback } from 'use-debounce';
+import { useDebouncedCallback } from 'use-debounce';
 
 interface SearchProps {
-  onSearchResults: (results: { success: boolean; results: any[] }) => void;
+  onSearchResults: (results: any[]) => void; // Simplified to only pass results
 }
+
 
 const Search = ({ onSearchResults }: SearchProps) => {
   const param = useLocalSearchParams<{ query?: string }>();
@@ -16,7 +17,7 @@ const Search = ({ onSearchResults }: SearchProps) => {
   // Debounce the search input
   const debouncedSearch = useDebouncedCallback(async (text: string) => {
     if (text.trim() === '') {
-      onSearchResults({ success: true, results: [] }); // Notify parent of empty results
+      onSearchResults([]); // Notify parent of empty results
       return;
     }
 
@@ -24,24 +25,34 @@ const Search = ({ onSearchResults }: SearchProps) => {
     try {
       // Call your Cloudflare Worker endpoint with the search query
       const response = await fetch(
-        `https://plate-pals.handler.spiritbulb.com/api/filtered-data?query=${encodeURIComponent(text)}`,
+        `https://plate-pals.handler.spiritbulb.com/api/specific-data?query=${encodeURIComponent(text)}`,
+
         {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
         }
-      );
+      )
 
       if (!response.ok) {
         throw new Error('Failed to fetch search results');
       }
 
       const data = await response.json();
-      onSearchResults(data); // Pass the entire response to the parent
+      console.log("res: ", data);
+
+      // Check if the response is successful and contains results
+      if (data.success && data.results) {
+        console.log("results:", data.results);
+
+        onSearchResults(data.results); // Pass only the results array to the parent
+      } else {
+        onSearchResults([]); // Notify parent of no results
+      }
     } catch (error) {
       console.error('Error fetching search results:', error);
-      onSearchResults({ success: false, results: [] }); // Notify parent of failure
+      onSearchResults([]); // Notify parent of failure
     } finally {
       setLoading(false);
     }
@@ -49,6 +60,7 @@ const Search = ({ onSearchResults }: SearchProps) => {
 
   const handleSearch = (text: string) => {
     setSearch(text);
+    console.log("search:", text);
     debouncedSearch(text); // Trigger debounced search
   };
 

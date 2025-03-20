@@ -33,11 +33,10 @@ const styles = {
     width: Dimensions.get("window").width * 0.7,
     height: Dimensions.get("window").height,
     backgroundColor: '#fff',
-    borderTopleftRadius: 10,
-    borderBottomlefttRadius: 10,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
     padding: 10,
-    position: 'absolute',
-    right: '0',
+    right: 0,
   },
 };
 
@@ -49,7 +48,6 @@ const Explore = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(width)).current; // Animation value for dropdown
-
 
   const fetchFooditems = async () => {
     try {
@@ -101,6 +99,7 @@ const Explore = () => {
       }).start();
     }
   }, [isDropdownVisible]);
+
   const handleCardPress = (item: any) => {
     router.push({
       pathname: '/properties/[id]',
@@ -115,7 +114,7 @@ const Explore = () => {
 
   const handleNotificationsPress = () => router.push('/properties/myorders');
   const handleProfilePress = () => router.push('/Profile');
-  const handlePagePress = () => router.push('/explore');
+  const handlePagePress = () => router.push('/');
   const { user } = useGlobalContext();
 
   // Toggle dropdown visibility
@@ -124,15 +123,10 @@ const Explore = () => {
   };
 
   // Handle search results from the Search component
-  const handleSearchResults = (response: any) => {
-    if (response.success) {
-      setSearchResults(response.results);
-      setIsSearching(response.results.length > 0 || isKeyboardVisible);
-    } else {
-      setSearchResults([]);
-      setIsSearching(false);
-    }
-  };
+  const handleSearchResults = (results: any[]) => {
+    setSearchResults(results);
+    setIsSearching(results.length > 0 || isKeyboardVisible);
+  }
 
   return (
     <SafeAreaView className="h-full bg-white">
@@ -212,9 +206,7 @@ const Explore = () => {
           pagingEnabled
           contentContainerStyle={{ paddingBottom: 80 }}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <NoResults />
-          }
+          ListEmptyComponent={<NoResults />}
         />
       ) : (
         // Display all food items

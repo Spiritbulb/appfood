@@ -35,7 +35,6 @@ interface FormData {
   ingredients: string;
   description: string;
   nationality: string;
-  price: string | number;
 }
 
 const MyPosts = () => {
@@ -47,7 +46,6 @@ const MyPosts = () => {
     ingredients: '',
     description: '',
     nationality: '',
-    price: '',
   });
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // For preview
   const [uploading, setUploading] = useState<boolean>(false); // Track upload status
@@ -158,7 +156,7 @@ const MyPosts = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.title || !formData.image || !formData.portion || !formData.ingredients || !formData.description || !formData.nationality || !formData.price) {
+    if (!formData.title || !formData.image || !formData.portion || !formData.ingredients || !formData.description || !formData.nationality) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
@@ -179,13 +177,12 @@ const MyPosts = () => {
         ingredients: '',
         description: '',
         nationality: '',
-        price: '',
       });
       setSelectedImage(null); // Clear the selected image
 
       // Redirect to the Explore page
 
-      router.push('/explore'); // Replace 'Explore' with the actual name of your Explore screen
+      router.push('/'); // Replace 'Explore' with the actual name of your Explore screen
     } catch (error) {
       console.error('Error posting item:', error);
       Alert.alert('Error', 'Failed to post food item.');
@@ -215,7 +212,6 @@ const MyPosts = () => {
               <Text style={styles.foodDetail}>{formData.ingredients || 'Ingredients'}</Text>
               <Text style={styles.foodDetail}>{formData.description || 'Description'}</Text>
               <Text style={styles.foodDetail}>{formData.portion || 'Portion Size'}</Text>
-              <Text style={styles.foodPrice}>Ksh {formData.price || 'Price'}</Text>
             </View>
           </View>
         ) : (
@@ -264,14 +260,6 @@ const MyPosts = () => {
           placeholder="Nationality"
           value={formData.nationality}
           onChangeText={(text) => handleChange('nationality', text)}
-          editable={!uploading}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Price"
-          value={formData.price.toString()}
-          onChangeText={(text) => handleChange('price', text)}
-          keyboardType="numeric"
           editable={!uploading}
         />
         <View style={{ paddingBottom: 90 }}>
@@ -361,10 +349,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#fff',
     marginBottom: 5,
-  },
-  foodPrice: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#FFf',
   },
 });

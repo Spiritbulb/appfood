@@ -1,29 +1,19 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet, Easing } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Animated, Easing } from 'react-native';
 import React, { useState } from 'react';
-import icons from '@/constants/icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Animated } from 'react-native';
 import { router } from 'expo-router';
-import { number } from 'yargs';
+import icons from '@/constants/icons';
 
 interface Props {
   item: any;
   onPress: () => void;
 }
 
-
 export const HomeCards = ({ item, onPress }: Props) => {
-  // Define styles at the top of the file
   const styles = StyleSheet.create({
-    safeArea: {
-      flex: 1,
-      backgroundColor: '#FFFFFF',
-      paddingHorizontal: 20,
-      paddingVertical: 20,
-      justifyContent: 'center',
-    },
     cardContainer: {
-      width: '96%',
+      width: '94%',
+      height: '95%',
       borderRadius: 12,
       backgroundColor: '#fff',
       shadowColor: '#000',
@@ -59,14 +49,8 @@ export const HomeCards = ({ item, onPress }: Props) => {
     ratingText: {
       fontSize: 12,
       fontWeight: 'bold',
-      color: '666',
+      color: '#666',
       marginLeft: 4,
-    },
-    imageContainer: {
-      width: '100%',
-      height: 60,
-      borderRadius: 12,
-      overflow: 'hidden',
     },
     foodImage: {
       width: '100%',
@@ -95,37 +79,10 @@ export const HomeCards = ({ item, onPress }: Props) => {
       fontWeight: '600',
       color: '#333',
     },
-    portionButton: {
-      padding: 8,
-      backgroundColor: '#F0F0F0',
-      borderRadius: 8,
-      marginHorizontal: 8,
-    },
-    portionButtonText: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      color: '#333',
-    },
     portionValue: {
       fontSize: 16,
       fontWeight: '600',
       color: '#333',
-    },
-    priceContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginTop: 16,
-    },
-    priceLabel: {
-      fontSize: 16,
-      fontWeight: '600',
-      color: '#333',
-    },
-    priceValue: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: '#666',
-      marginLeft: 8,
     },
     portionPriceContainer: {
       flexDirection: 'row',
@@ -233,7 +190,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
             <Text style={styles.portionValue}>
               {item?.portions || 'N/A'}
             </Text>
-          </View> {/*remove price from database */}
+          </View>
         </View>
 
         {/* Order Button and Favorite Icon */}
@@ -264,11 +221,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
   );
 };
 
-
-
-
 export const OrderCards = ({ item, onPress }: Props) => {
-  // Define styles at the top of the file
   const styles = StyleSheet.create({
     safeArea: {
       flex: 0,
@@ -288,22 +241,6 @@ export const OrderCards = ({ item, onPress }: Props) => {
       shadowRadius: 6,
       elevation: 3, // For Android
       padding: 25,
-    },
-    ratingBadge: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      position: 'absolute',
-      top: 16,
-      right: 16,
-      backgroundColor: 'rgba(234, 211, 211, 0.7)',
-      padding: 8,
-      borderRadius: 10,
-      zIndex: 50,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
-      elevation: 2, // For Android
     },
     imageContainer: {
       width: '100%',
@@ -370,11 +307,6 @@ export const OrderCards = ({ item, onPress }: Props) => {
       color: '#666',
       marginLeft: 8,
     },
-    portionPriceContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: 10,
-    },
     actionContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -403,15 +335,11 @@ export const OrderCards = ({ item, onPress }: Props) => {
 
   const [portionAmount, setPortionAmount] = useState(1);
   const pricePerPortion = parseFloat(item.price);
-
   const totalPrice = (portionAmount * pricePerPortion).toFixed(2);
 
   const handleIncreasePortion = () => {
     setPortionAmount(portionAmount + 1);
   };
-
-  const handleOrderPress = () => router.push(`/explore`);
-
 
   const handleDecreasePortion = () => {
     if (portionAmount > 1) {
@@ -419,22 +347,23 @@ export const OrderCards = ({ item, onPress }: Props) => {
     }
   };
 
+  const handleOrderPress = () => router.push('/');
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.cardContainer}>
-
-        // Food Image
+        {/* Food Image */}
         <View style={styles.imageContainer}>
           <Image source={{ uri: item.image }} style={styles.foodImage} />
         </View>
 
-        // Food Details
+        {/* Food Details */}
         <View style={styles.foodDetails}>
           <Text style={styles.foodTitle}>{item.title}</Text>
           <Text style={styles.foodSubtitle}>{item.nationality}</Text>
           <Text style={styles.foodSubtitle}>{item.ingredients}</Text>
 
-          // Portion Adjuster
+          {/* Portion Adjuster */}
           <View style={styles.portionContainer}>
             <Text style={styles.portionLabel}>PORTION =</Text>
             <TouchableOpacity
@@ -452,13 +381,14 @@ export const OrderCards = ({ item, onPress }: Props) => {
             </TouchableOpacity>
           </View>
 
-
+          {/* Price */}
           <View style={styles.priceContainer}>
             <Text style={styles.priceLabel}>TOTAL PRICE =</Text>
             <Text style={styles.priceValue}>${totalPrice}</Text>
           </View>
         </View>
 
+        {/* Order Button */}
         <View style={styles.actionContainer}>
           <TouchableOpacity style={styles.orderButton} onPress={handleOrderPress}>
             <Text style={styles.orderButtonText}>Confirm Order</Text>
