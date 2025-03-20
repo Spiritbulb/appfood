@@ -21,6 +21,7 @@ import { StatusBar } from 'expo-status-bar';
 import images from "@/constants/images";
 import icons from "@/constants/icons";
 import { useGlobalContext } from "@/lib/global-provider";
+import { Alert } from "react-native";
 
 const { width } = Dimensions.get("window");
 
@@ -151,7 +152,7 @@ const Explore = () => {
   const handleNotificationsPress = () => router.push('/properties/myorders');
   const handleProfilePress = () => router.push('/Profile');
   const handlePagePress = () => router.push('/');
-  const { user } = useGlobalContext();
+  const { user, logout } = useGlobalContext();
 
   // Toggle dropdown visibility
   const toggleDropdown = () => {
@@ -166,7 +167,33 @@ const Explore = () => {
 
   const handleItemPress = () => router.push(`/addpost`);
   const handleBestItemPress = () => router.push(`/properties/myfavourites`);
+  const handleChartsPress = () => router.push(`/properties/dm`);
 
+  const handleExitPress = () => {
+    console.log("Logout button pressed"); // Check if the button is being pressed
+
+    const performLogout = async () => {
+      console.log("Attempting to logout..."); // Check if the async function is being called
+      try {
+        const success = await logout();
+        console.log("Logout success:", success); // Check the result of the logout function
+
+        if (success) {
+          Alert.alert("Success", "Logged out successfully");
+          console.log("Redirecting to sign-in screen..."); // Check if the redirect is being triggered
+          router.replace("/sign-in"); // Redirect to the sign-in screen
+        } else {
+          Alert.alert("Error", "Failed to logout");
+          console.log("Logout failed"); // Check if the logout failed
+        }
+      } catch (error) {
+        console.error("Logout error:", error); // Log any errors that occur during logout
+        Alert.alert("Error", "An error occurred during logout");
+      }
+    };
+
+    performLogout();
+  };
 
   return (
     <SafeAreaView className="h-full bg-white">
@@ -235,6 +262,16 @@ const Explore = () => {
             <View>
               <TouchableOpacity style={styles.Button} onPress={handleBestItemPress} >
                 <Text style={styles.ButtonText}>Favourites</Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <TouchableOpacity style={styles.Button} onPress={handleChartsPress} >
+                <Text style={styles.ButtonText}>Chats</Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <TouchableOpacity style={styles.Button} onPress={handleExitPress} >
+                <Text style={styles.ButtonText}>Log Out</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
