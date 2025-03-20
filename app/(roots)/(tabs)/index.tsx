@@ -77,6 +77,10 @@ const styles = {
 const Explore = () => {
   const [items, setItems] = useState<{ item_id: number; title: string; price: number; image: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+
+
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -92,6 +96,37 @@ const Explore = () => {
       console.error('Error fetching food items:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchMoreData = async () => {
+    if (loading || !hasMore) return; // Prevent multiple simultaneous fetches
+    setLoading(true);
+  
+    try {
+      const newData = await fetchData(page); // Fetch new data
+      if (newData && newData.length > 0) {
+        setItems((prevItems) => [...prevItems, ...newData]); // Append new data
+        setPage((prevPage) => prevPage + 1); // Increment page
+      } else {
+        setHasMore(false); // No more data to fetch
+      }
+    } catch (error) {
+      console.error('Error fetching more data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Simulated fetch function
+  const fetchData = async (page) => {
+    try {
+      const response = await fetch('https://plate-pals.handler.spiritbulb.com/api/data');
+      const data = await response.json();
+      return data.results; // Return the fetched data
+    } catch (error) {
+      console.error('Error fetching food items:', error);
+      return []; // Return an empty array in case of an error
     }
   };
 
@@ -163,6 +198,7 @@ const Explore = () => {
   }
 
   const handleItemPress = () => router.push(`/addpost`);
+  const handleHomePress = () => router.push(`/`);
   const handleBestItemPress = () => router.push(`/properties/myfavourites`);
   const handleChartsPress = () => router.push(`/properties/dm`);
 
@@ -252,7 +288,7 @@ const Explore = () => {
               </TouchableOpacity>
             </View>
             <View>
-              <TouchableOpacity style={styles.Button} onPress={handleItemPress} >
+              <TouchableOpacity style={styles.Button} onPress={handleHomePress} >
                 <Text style={styles.ButtonText}>Home</Text>
               </TouchableOpacity>
             </View>
@@ -294,36 +330,38 @@ const Explore = () => {
               <HomeCards item={item} onPress={() => handleCardPress(item)} />
             </View>
           )}
-          contentContainerClassName="pb-32"
-          horizontal
+          
+          
           pagingEnabled
-          contentContainerStyle={{ paddingBottom: 80 }}
+          contentContainerStyle={{ paddingBottom: 8 }}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={<NoResults />}
         />
       ) : (
         // Display all food items
         <FlatList
-          data={items}
-          keyExtractor={(item) => item.item_id.toString()} // Use item.item_id as the key
-          renderItem={({ item }) => (
+            data={items}
+              keyExtractor={(item) => item.item_id.toString()}
+              renderItem={({ item }) => (
             <View style={{ width }}>
               <HomeCards item={item} onPress={() => handleCardPress(item)} />
             </View>
-          )}
-          contentContainerClassName="pb-32"
-          horizontal
-          pagingEnabled
-          contentContainerStyle={{ paddingBottom: 80 }}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            loading ? (
-              <ActivityIndicator size="large" className="text-primary-300 mt-5" />
-            ) : (
-              <NoResults />
-            )
-          }
-        />
+           )}
+          onEndReached={fetchFooditems} // Trigger when near the end of the list
+           onEndReachedThreshold={0.5} // Trigger when 50% of the last item is visible
+           ListEmptyComponent={
+          loading ? (
+          <ActivityIndicator size="large" className="text-primary-300 mt-5" />
+           ) : (
+       <NoResults />
+        )
+     }
+           ListFooterComponent={
+          loading && hasMore ? (
+          <ActivityIndicator size="large" className="text-primary-300 mt-5" />
+    ) : null
+  }
+/>
       )}
     </SafeAreaView>
   );

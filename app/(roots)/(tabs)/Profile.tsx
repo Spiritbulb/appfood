@@ -95,7 +95,7 @@ const Profile = () => {
         <View className="flex flex-col mt-10">
           <SettingsItem
             icon={icons.calendar}
-            title="Post"
+            title="My Post"
             id={1}
             key={4}
             onPress={handleMyPostsPress}
@@ -112,7 +112,7 @@ const Profile = () => {
         <View className="flex flex-col mt-10">
           <SettingsItem
             icon={icons.wallet}
-            title="My Wallet"
+            title="My Favourites"
             id={2}
             key={3}
             onPress={handleMyFavouritesPress}

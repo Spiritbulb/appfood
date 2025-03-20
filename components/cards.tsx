@@ -31,7 +31,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       flexDirection: 'row',
       alignItems: 'center',
       position: 'absolute',
-      top: 30,
+      top: 3,
       right: 30,
       backgroundColor: 'rgba(100, 98, 96, 0.7)',
       padding: 8,
@@ -58,7 +58,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       height: '55%',
     },
     foodDetails: {
-      marginTop: 16,
+      marginTop: 10,
     },
     foodTitle: {
       fontSize: 20,
@@ -90,11 +90,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       fontWeight: '600',
       color: '#333',
     },
-    portionPriceContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: 10,
-    },
+   
     actionContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -103,8 +99,8 @@ export const HomeCards = ({ item, onPress }: Props) => {
     },
     orderButton: {
       flex: 1,
-      paddingVertical: 12,
-      borderRadius: 8,
+      paddingVertical: 10,
+      borderRadius: 80,
       backgroundColor: '#eab620',
       alignItems: 'center',
       shadowColor: '#FFD700',
@@ -113,6 +109,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       shadowRadius: 4,
       elevation: 3, // For Android
       marginRight: 16,
+      marginBottom: 16,
     },
     orderButtonText: {
       fontSize: 16,
@@ -123,8 +120,10 @@ export const HomeCards = ({ item, onPress }: Props) => {
       padding: 8,
     },
     favoriteIcon: {
-      width: 24,
+      width: 20,
       height: 24,
+      marginLeft: 8,
+      marginRight: 8,
     },
   });
 
@@ -179,7 +178,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
         <Text style={styles.foodTitle}>
           {item?.title || 'No Title'}
         </Text>
-        
+
         <Text style={styles.foodSubtitle}>
           {item?.nationality || 'N/A'}
         </Text>
@@ -196,7 +195,6 @@ export const HomeCards = ({ item, onPress }: Props) => {
         </Text>
 
         {/* Portion and Price */}
-        <View style={styles.portionPriceContainer}>
           <View style={styles.portionContainer}>
             <Text style={styles.portionLabel}>Portion:</Text>
             <Text style={styles.portionValue}>
@@ -228,7 +226,6 @@ export const HomeCards = ({ item, onPress }: Props) => {
             />
           </TouchableOpacity>
         </View>
-      </View>
     </Animated.View>
   );
 };
