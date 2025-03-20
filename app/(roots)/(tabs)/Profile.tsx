@@ -53,7 +53,26 @@ const Profile = () => {
   const handleLogout = async () => {
     const success = await logout();
     if (success) {
-      Alert.alert("Success", "Logged out successfully");
+      Alert.alert(
+        "You're logged out!",
+        "To logout of your Spiritbulb account, visit spiritbulb.com",
+        [
+            {
+                text: "Visit Spiritbulb",
+                onPress: () => {
+                    window.open("https://www.spiritbulb.com", "_blank"); // Open the website in a new tab
+                },
+            },
+            {
+                text: "OK",
+                onPress: () => {
+                    // Redirect to the sign-in page
+                    
+                    router.push('/sign-in');
+                },
+            },
+        ]
+    );
       router.replace("/sign-in"); // Redirect to the sign-in screen
     } else {
       Alert.alert("Error", "Failed to logout");
