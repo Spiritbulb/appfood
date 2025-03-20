@@ -14,7 +14,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
   const styles = StyleSheet.create({
     cardContainer: {
       width: "90%",
-      height: 600,
+      height: 580,
       borderRadius: 12,
       backgroundColor: "#fff",
       justifyContent: "space-between",
@@ -34,6 +34,8 @@ export const HomeCards = ({ item, onPress }: Props) => {
       borderRadius: 12,
       resizeMode: "contain",
       position: 'relative',
+      alignSelf: 'center',
+      top: 15,
     },
     foodDetails: {
       padding: 10,
@@ -42,11 +44,12 @@ export const HomeCards = ({ item, onPress }: Props) => {
       fontSize: 18,
       fontWeight: "bold",
       color: "#333",
+      marginTop: 14,
     },
     foodSubtitle: {
       fontSize: 14,
       color: "#666",
-      marginTop: 1,
+      marginTop: 3,
       marginBottom: 1,
     },
     ratingBadge: {
@@ -86,7 +89,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       paddingBottom: 0,
       borderBottomLeftRadius: 12,
       borderBottomRightRadius: 12,
-      marginTop: 4,
+      marginTop: 140,
 
     },
     orderButton: {
@@ -181,7 +184,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
           <View style={{ flexDirection: "row", marginTop: 8 }}>
             <Text style={styles.foodSubtitle}>Portion: {item?.portions || "N/A"}</Text>
             <Text style={[styles.foodSubtitle, { marginLeft: 16 }]}>
-        
+
             </Text>
           </View>
         </View>

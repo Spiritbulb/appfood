@@ -360,7 +360,6 @@ const Explore = () => {
           )}
           onEndReached={fetchMoreData}
           contentContainerStyle={{ gap: 50 }}
-          contentContainerStyle={{ gap: 50 }}
           onEndReachedThreshold={0.1}
           ListEmptyComponent={
             loading ? (
