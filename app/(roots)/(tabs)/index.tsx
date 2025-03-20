@@ -335,18 +335,27 @@ const Explore = () => {
         // Display search results
         <FlatList
           data={searchResults}
-          keyExtractor={(item) => item.item_id.toString()} // Use item.item_id as the key
+          keyExtractor={(item) => item.item_id.toString()}
           renderItem={({ item }) => (
-            <View style={{ width }}>
+            <View style={{ marginBottom: 3 }}>
               <HomeCards item={item} onPress={() => handleCardPress(item)} />
             </View>
           )}
-          contentContainerClassName="pb-32"
-          horizontal
-          pagingEnabled
-          contentContainerStyle={{ paddingBottom: 80 }}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={<NoResults />}
+          onEndReached={fetchMoreData}
+          contentContainerStyle={{ gap: 50 }}
+          onEndReachedThreshold={0.1}
+          ListEmptyComponent={
+            loading ? (
+              <ActivityIndicator size="large" className="text-primary-300 mt-5" />
+            ) : (
+              <NoResults />
+            )
+          }
+          ListFooterComponent={
+            loading && hasMore ? (
+              <ActivityIndicator size="large" className="text-primary-300 mt-5" />
+            ) : null
+          }
         />
       ) : (
         // Display all food items with infinite scroll
