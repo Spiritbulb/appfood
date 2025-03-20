@@ -4,7 +4,7 @@ import React from 'react'
 const mywallet = () => {
     return (
         <View>
-            <Text>mywallet xoxo:/</Text>
+            <Text>myfavourite posts xoxo:/</Text>
         </View>
     )
 }

@@ -25,18 +25,54 @@ import { useGlobalContext } from "@/lib/global-provider";
 const { width } = Dimensions.get("window");
 
 const styles = {
+  modalScreen: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   dropdownMenu: {
-    width: Dimensions.get("window").width * 0.7,
+    width: width * 0.7,
     height: Dimensions.get("window").height,
     backgroundColor: '#fff',
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
     padding: 10,
+    position: 'absolute',
     right: 0,
+  },
+  submitButton: {
+    width: '100%',
+    paddingVertical: 15,
+    backgroundColor: '#76422b',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 1,
+    marginTop: 10,
+    top: 10,
+  },
+  submitButtonText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  Button: {
+    width: '100%',
+    padding: 15,
+    backgroundColor: 'transparent',
+    alignItems: 'left',
+    justifyContent: 'center',
+    elevation: 0,
+    marginTop: 10,
+    top: 20,
+  },
+  ButtonText: {
+    fontSize: 15,
+    fontWeight: '300',
+    color: '#000',
   },
 };
 
@@ -83,11 +119,11 @@ const Explore = () => {
     };
   }, [searchResults]);
 
-  // Handle card press
+  // Handle dropdown visibility
   useEffect(() => {
     if (isDropdownVisible) {
       Animated.timing(slideAnim, {
-        toValue: 7,
+        toValue: 0,
         duration: 300,
         useNativeDriver: true,
       }).start();
@@ -128,6 +164,10 @@ const Explore = () => {
     setIsSearching(results.length > 0 || isKeyboardVisible);
   }
 
+  const handleItemPress = () => router.push(`/addpost`);
+  const handleBestItemPress = () => router.push(`/properties/myfavourites`);
+
+
   return (
     <SafeAreaView className="h-full bg-white">
       <StatusBar backgroundColor="#500000" />
@@ -156,6 +196,7 @@ const Explore = () => {
         transparent={true}
         visible={isDropdownVisible}
         onRequestClose={() => setDropdownVisible(false)}
+        style={styles.modalScreen}
       >
         <TouchableOpacity
           style={styles.modalOverlay}
@@ -180,6 +221,21 @@ const Explore = () => {
                   </View>
                 </TouchableOpacity>
               </View>
+            </View>
+            <View>
+              <TouchableOpacity style={styles.submitButton} onPress={handleItemPress} >
+                <Text style={styles.submitButtonText}>Add Item</Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <TouchableOpacity style={styles.Button} onPress={handleItemPress} >
+                <Text style={styles.ButtonText}>Home</Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <TouchableOpacity style={styles.Button} onPress={handleBestItemPress} >
+                <Text style={styles.ButtonText}>Favourites</Text>
+              </TouchableOpacity>
             </View>
           </Animated.View>
         </TouchableOpacity>
