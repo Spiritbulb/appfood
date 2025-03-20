@@ -28,6 +28,7 @@ interface FormData {
   ingredients: string;
   description: string;
   nationality: string;
+  user_id: string;
 }
 
 const MyPosts = () => {
@@ -38,6 +39,7 @@ const MyPosts = () => {
     ingredients: '',
     description: '',
     nationality: '',
+    user_id: 'user?.email',
   });
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // For preview
   const [uploading, setUploading] = useState<boolean>(false); // Track upload status
@@ -144,7 +146,7 @@ const MyPosts = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.title || !formData.image || !formData.portion || !formData.ingredients || !formData.description || !formData.nationality) {
+    if (!formData.title || !formData.image || !formData.portion || !formData.ingredients || !formData.description || !formData.nationality || !formData.user_id) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
@@ -161,6 +163,7 @@ const MyPosts = () => {
         ingredients: '',
         description: '',
         nationality: '',
+        user_id: 'user?.email',
       });
       setSelectedImage(null);
 

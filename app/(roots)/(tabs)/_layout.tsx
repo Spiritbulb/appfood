@@ -5,19 +5,13 @@ import { Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import icons from '@/constants/icons';
-import { createStaticNavigation } from '@react-navigation/native';
 
-
-const TabIcon = ({ focused, icon, title }: {
-  focused: boolean;
-  icon: any; title: string
-}) => (
+const TabIcon = ({ focused, icon }: {focused: boolean, icon:any}) => (
   <View className='flex-1 mt-5 flex flex-col items-center'>
     <Image source={icon} tintColor={focused ? "#eab620" : "#FFFFFF"} resizeMode="contain" className="size-6" />
-
-
+    
   </View>
-)
+);
 
 const TabsLayout = () => {
   return (
@@ -27,36 +21,45 @@ const TabsLayout = () => {
         tabBarStyle: {
           backgroundColor: "#500000",
           position: "absolute",
-
           justifyContent: 'center',
           borderTopWidth: 0,
           paddingTop: 5,
           minHeight: 70,
-        }
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "index",
-
+          title: "Home",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon icon={icons.home} focused={focused} title="index" />
-          ),
-        }} />
-
-      <Tabs.Screen
-        name="addpost"
-        options={{
-          title: "addpost",
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <TabIcon icon={icons.addpost} focused={focused} title="addpost" />
+            <TabIcon icon={icons.home} focused={focused}  />
           ),
         }}
       />
 
+      <Tabs.Screen
+        name="addpost"
+        options={{
+          title: "Add Post",
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon icon={icons.addpost} focused={focused}  />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="dm"
+        options={{
+          title: "Chat",
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon icon={icons.chat} focused={focused}  />
+          ),
+        }}
+      />
 
       <Tabs.Screen
         name="Profile"
@@ -64,14 +67,10 @@ const TabsLayout = () => {
           title: "Profile",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon icon={icons.person} focused={focused} title="Profile" />
+            <TabIcon icon={icons.person} focused={focused}  />
           ),
         }}
       />
-
-
-
-
     </Tabs>
   );
 };
