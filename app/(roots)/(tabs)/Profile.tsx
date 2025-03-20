@@ -62,7 +62,7 @@ const Profile = () => {
 
   const handleMyOrdersPress = () => router.push("/properties/myorders");
   const handleMyPostsPress = () => router.push("/properties/myposts");
-  const handleMyWalletPress = () => router.push("/properties/mywallet");
+  const handleMyFavouritesPress = () => router.push("/properties/myfavourites");
   const handleExtraPagePress = () => router.push("/properties/extrapage");
   const handleEditProfilePress = () => router.push("/properties/editprofile");
   const handleNotificationsPress = () => router.push("/properties/myorders");
@@ -115,7 +115,7 @@ const Profile = () => {
             title="My Wallet"
             id={2}
             key={3}
-            onPress={handleMyWalletPress}
+            onPress={handleMyFavouritesPress}
           />
           <SettingsItem
             icon={icons.wallet}
