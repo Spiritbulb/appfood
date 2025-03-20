@@ -28,7 +28,7 @@ const { width } = Dimensions.get("window");
 const styles = {
   modalScreen: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end' as 'flex-end',
   },
   modalOverlay: {
     flex: 1,
@@ -41,7 +41,7 @@ const styles = {
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
     padding: 10,
-    position: 'absolute',
+    position: 'absolute' as 'absolute',
     right: 0,
   },
   submitButton: {
@@ -49,7 +49,7 @@ const styles = {
     paddingVertical: 15,
     backgroundColor: '#76422b',
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: 'center' as 'center',
     justifyContent: 'center',
     elevation: 1,
     marginTop: 10,
@@ -64,7 +64,7 @@ const styles = {
     width: '100%',
     padding: 15,
     backgroundColor: 'transparent',
-    alignItems: 'left',
+    alignItems: 'flex-start',
     justifyContent: 'center',
     elevation: 0,
     marginTop: 10,

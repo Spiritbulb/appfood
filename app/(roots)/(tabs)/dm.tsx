@@ -1,5 +1,4 @@
-// app/chat.js
-import { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useGlobalContext } from '@/lib/global-provider';
 
@@ -8,20 +7,34 @@ import { RouteProp } from '@react-navigation/native';
 type ChatScreenRouteProp = RouteProp<{ params: { recipientId: string } }, 'params'>;
 
 const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
-  const { recipientId } = route.params || {}; // Get recipientId from navigation (fallback to empty object)
-  const { user } = useGlobalContext(); // Get current user from global context
-  const [messages, setMessages] = useState<{ from: string; text: string; timestamp: string }[]>([]); // Store chat messages
-  const [inputText, setInputText] = useState(''); // Store input text
-  const [loading, setLoading] = useState(true); // Loading state for fetching chat history
-  const socket = useRef<WebSocket | null>(null); // WebSocket reference
+  const { user } = useGlobalContext();
+  interface Message {
+    from: string;
+    text: string;
+    timestamp: number;
+  }
+  
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputText, setInputText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const socket = useRef<WebSocket | null>(null);
+
+  // Safely extract recipientId from route.params
+  let recipientId;
+  try {
+    recipientId = route.params?.recipientId;
+  } catch (error) {
+    console.error('Error extracting recipientId from route.params:', error);
+    recipientId = null;
+  }
 
   // Generate DM channel ID (only if recipientId is available)
-  const dmChannelId = recipientId ? [user?.email, recipientId].sort().join('-') : null;
+  const dmChannelId = recipientId && user?.email ? [user.email, recipientId].sort().join('-') : null;
 
   // Fetch chat history on mount (only if recipientId is available)
   useEffect(() => {
-    if (!recipientId) {
-      setLoading(false); // Skip fetching if recipientId is missing
+    if (!recipientId || !dmChannelId) {
+      setLoading(false); // Skip fetching if recipientId or dmChannelId is missing
       return;
     }
 
@@ -40,20 +53,20 @@ const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
     fetchChatHistory();
   }, [dmChannelId, recipientId]);
 
-  // Connect to WebSocket (only if recipientId is available)
+  // Connect to WebSocket (only if recipientId and user.email are available)
   useEffect(() => {
-    if (!recipientId || !user?.email) return; // Ensure recipientId and user are available
+    if (!recipientId || !user?.email || !dmChannelId) return;
 
-    const wsUrl = `wss://dm-worker.your-domain.workers.dev/dm/${dmChannelId}/ws?userId=${user.email}`;
+    const wsUrl = `wss://chat.spiritbulb.workers.dev/dm/${dmChannelId}/ws?userId=${user.email}`;
     socket.current = new WebSocket(wsUrl);
 
-    socket.current.onopen = () => {
-      console.log('Connected to DM channel');
-    };
-
     socket.current.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      setMessages((prevMessages) => [...prevMessages, message]);
+      try {
+        const message = JSON.parse(event.data);
+        setMessages((prevMessages) => [...prevMessages, message]);
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
     };
 
     socket.current.onerror = (error) => {
@@ -74,19 +87,23 @@ const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
 
   // Send a message (only if recipientId is available)
   const sendMessage = () => {
-    if (socket.current && inputText.trim() && recipientId) {
-      const message = {
-        type: 'message',
-        to: recipientId,
-        text: inputText,
-      };
-      socket.current.send(JSON.stringify(message));
-      setInputText('');
+    try {
+      if (socket.current && inputText.trim() && recipientId) {
+        const message = {
+          type: 'message',
+          to: recipientId,
+          text: inputText,
+        };
+        socket.current.send(JSON.stringify(message));
+        setInputText('');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
   };
 
   // Render a single chat message
-  const renderMessage = ({ item }: { item: { from: string; text: string; timestamp: string } }) => (
+  const renderMessage = ({ item }: { item: Message }) => (
     <View style={item.from === user?.email ? styles.myMessage : styles.otherMessage}>
       <Text style={styles.messageText}>{item.text}</Text>
       <Text style={styles.messageTime}>
