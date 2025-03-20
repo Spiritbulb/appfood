@@ -354,12 +354,12 @@ const Explore = () => {
           data={items}
           keyExtractor={(item) => item.item_id.toString()}
           renderItem={({ item }) => (
-            <View style={{ marginBottom: 20 }}>
+            <View style={{ marginBottom: 3 }}>
               <HomeCards item={item} onPress={() => handleCardPress(item)} />
             </View>
           )}
           onEndReached={fetchMoreData}
-          contentContainerStyle={{ gap: 300 }}
+          contentContainerStyle={{ gap: 50 }}
           onEndReachedThreshold={0.1}
           ListEmptyComponent={
             loading ? (

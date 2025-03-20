@@ -14,7 +14,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
   const styles = StyleSheet.create({
     cardContainer: {
       width: "90%",
-      height: 700,
+      height: 600,
       borderRadius: 12,
       backgroundColor: "#fff",
       justifyContent: "space-between",
@@ -30,9 +30,10 @@ export const HomeCards = ({ item, onPress }: Props) => {
     },
     foodImage: {
       width: "90%",
-      height: "70%",
+      height: "60%",
       borderRadius: 12,
       resizeMode: "contain",
+      position: 'relative',
     },
     foodDetails: {
       padding: 10,
