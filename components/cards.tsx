@@ -13,8 +13,8 @@ interface Props {
 export const HomeCards = ({ item, onPress }: Props) => {
   const styles = StyleSheet.create({
     cardContainer: {
-      width: '94%',
-      height: '95%',
+      width: '100%',
+      height: '40%',
       borderRadius: 12,
       backgroundColor: '#fff',
       shadowColor: '#000',
@@ -22,10 +22,12 @@ export const HomeCards = ({ item, onPress }: Props) => {
       justifyContent: 'center',
       shadowOpacity: 0.4,
       shadowRadius: 6,
-      elevation: 3, // For Android
-      padding: 20,
+      elevation: 0, // For Android
+      padding: 0,
       left: 9,
-      top: 7,
+      right: 9,
+      bottom: 0,
+      top: 1,
     },
     ratingBadge: {
       flexDirection: 'row',
@@ -54,8 +56,8 @@ export const HomeCards = ({ item, onPress }: Props) => {
       marginLeft: 4,
     },
     foodImage: {
-      width: '100%',
-      height: '55%',
+      width: '75%',
+      height: '100%',
     },
     foodDetails: {
       marginTop: 10,
@@ -99,8 +101,8 @@ export const HomeCards = ({ item, onPress }: Props) => {
     },
     orderButton: {
       flex: 1,
-      paddingVertical: 10,
-      borderRadius: 80,
+      paddingVertical: 12,
+      borderRadius: 8,
       backgroundColor: '#eab620',
       alignItems: 'center',
       shadowColor: '#FFD700',
@@ -109,7 +111,6 @@ export const HomeCards = ({ item, onPress }: Props) => {
       shadowRadius: 4,
       elevation: 3, // For Android
       marginRight: 16,
-      marginBottom: 16,
     },
     orderButtonText: {
       fontSize: 16,
@@ -120,10 +121,8 @@ export const HomeCards = ({ item, onPress }: Props) => {
       padding: 8,
     },
     favoriteIcon: {
-      width: 20,
+      width: 24,
       height: 24,
-      marginLeft: 8,
-      marginRight: 8,
     },
   });
 
@@ -178,7 +177,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
         <Text style={styles.foodTitle}>
           {item?.title || 'No Title'}
         </Text>
-
+        
         <Text style={styles.foodSubtitle}>
           {item?.nationality || 'N/A'}
         </Text>
@@ -408,4 +407,4 @@ export const OrderCards = ({ item, onPress }: Props) => {
       </View>
     </SafeAreaView>
   );
-};
+}; 
