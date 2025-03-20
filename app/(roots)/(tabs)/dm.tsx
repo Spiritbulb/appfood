@@ -1,5 +1,5 @@
 // app/chat.js
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useGlobalContext } from '@/lib/global-provider';
 

@@ -19,6 +19,8 @@ import * as MediaLibrary from 'expo-media-library';
 import axios from 'axios';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import  { useGlobalContext }  from '@/lib/global-provider';
+
 
 // Define the FormData interface
 interface FormData {
@@ -28,18 +30,22 @@ interface FormData {
   ingredients: string;
   description: string;
   nationality: string;
-  user_id: string;
+  user_id: string | undefined;
+  created_at: string;
 }
 
 const MyPosts = () => {
+  const { user } = useGlobalContext();
   const [formData, setFormData] = useState<FormData>({
+  
     title: '',
     image: '',
     portion: '',
     ingredients: '',
     description: '',
     nationality: '',
-    user_id: 'user?.email',
+    user_id: user?.email,
+    created_at: new Date().toISOString(),
   });
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // For preview
   const [uploading, setUploading] = useState<boolean>(false); // Track upload status
@@ -163,7 +169,8 @@ const MyPosts = () => {
         ingredients: '',
         description: '',
         nationality: '',
-        user_id: 'user?.email',
+        user_id: user?.email,
+        created_at: new Date().toISOString(),
       });
       setSelectedImage(null);
 
