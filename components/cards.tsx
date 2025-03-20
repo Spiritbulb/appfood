@@ -22,7 +22,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.4,
       shadowRadius: 6,
-      elevation: 3, // For Android
+      elevation: 0, // For Android
       marginVertical: 10,
       marginHorizontal: 50,
       alignSelf: "center",
@@ -83,7 +83,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       justifyContent: "space-between",
       alignItems: "center",
       position: "absolute",
-      bottom: 0,
+      bottom: -20,
       width: "100%",
       paddingHorizontal: 15,
       paddingBottom: 0,
