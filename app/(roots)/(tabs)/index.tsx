@@ -80,13 +80,13 @@ const Explore = () => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
 
-
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(width)).current; // Animation value for dropdown
 
+  // Fetch initial data
   const fetchFooditems = async () => {
     try {
       const response = await fetch('https://plate-pals.handler.spiritbulb.com/api/data');
@@ -99,10 +99,11 @@ const Explore = () => {
     }
   };
 
+  // Fetch more data for infinite scroll
   const fetchMoreData = async () => {
     if (loading || !hasMore) return; // Prevent multiple simultaneous fetches
     setLoading(true);
-  
+
     try {
       const newData = await fetchData(page); // Fetch new data
       if (newData && newData.length > 0) {
@@ -117,11 +118,11 @@ const Explore = () => {
       setLoading(false);
     }
   };
-  
+
   // Simulated fetch function
-  const fetchData = async (page) => {
+  const fetchData = async (page: number) => {
     try {
-      const response = await fetch('https://plate-pals.handler.spiritbulb.com/api/data');
+      const response = await fetch(`https://plate-pals.handler.spiritbulb.com/api/data?page=${page}`);
       const data = await response.json();
       return data.results; // Return the fetched data
     } catch (error) {
@@ -195,7 +196,7 @@ const Explore = () => {
   const handleSearchResults = (results: any[]) => {
     setSearchResults(results);
     setIsSearching(results.length > 0 || isKeyboardVisible);
-  }
+  };
 
   const handleItemPress = () => router.push(`/addpost`);
   const handleHomePress = () => router.push(`/`);
@@ -330,38 +331,38 @@ const Explore = () => {
               <HomeCards item={item} onPress={() => handleCardPress(item)} />
             </View>
           )}
-          
-          
+          contentContainerClassName="pb-32"
+          horizontal
           pagingEnabled
-          contentContainerStyle={{ paddingBottom: 8 }}
+          contentContainerStyle={{ paddingBottom: 80 }}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={<NoResults />}
         />
       ) : (
-        // Display all food items
+        // Display all food items with infinite scroll
         <FlatList
-            data={items}
-              keyExtractor={(item) => item.item_id.toString()}
-              renderItem={({ item }) => (
-            <View style={{ width }}>
+          data={items}
+          keyExtractor={(item) => item.item_id.toString()}
+          renderItem={({ item }) => (
+            <View>
               <HomeCards item={item} onPress={() => handleCardPress(item)} />
             </View>
-           )}
-          onEndReached={fetchFooditems} // Trigger when near the end of the list
-           onEndReachedThreshold={0.5} // Trigger when 50% of the last item is visible
-           ListEmptyComponent={
-          loading ? (
-          <ActivityIndicator size="large" className="text-primary-300 mt-5" />
-           ) : (
-       <NoResults />
-        )
-     }
-           ListFooterComponent={
-          loading && hasMore ? (
-          <ActivityIndicator size="large" className="text-primary-300 mt-5" />
-    ) : null
-  }
-/>
+          )}
+          onEndReached={fetchMoreData} // Trigger when near the end of the list
+          onEndReachedThreshold={0.5} // Trigger when 50% of the last item is visible
+          ListEmptyComponent={
+            loading ? (
+              <ActivityIndicator size="large" className="text-primary-300 mt-5" />
+            ) : (
+              <NoResults />
+            )
+          }
+          ListFooterComponent={
+            loading && hasMore ? (
+              <ActivityIndicator size="large" className="text-primary-300 mt-5" />
+            ) : null
+          }
+        />
       )}
     </SafeAreaView>
   );

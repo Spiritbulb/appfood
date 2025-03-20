@@ -13,33 +13,49 @@ interface Props {
 export const HomeCards = ({ item, onPress }: Props) => {
   const styles = StyleSheet.create({
     cardContainer: {
-      width: '100%',
-      height: '40%',
+      width: "90%",
+      height: 700,
       borderRadius: 12,
-      backgroundColor: '#fff',
-      shadowColor: '#000',
+      backgroundColor: "#000",
+      shadowColor: "#000",
       shadowOffset: { width: 0, height: 2 },
-      justifyContent: 'center',
       shadowOpacity: 0.4,
       shadowRadius: 6,
-      elevation: 0, // For Android
-      padding: 0,
-      left: 9,
-      right: 9,
-      bottom: 0,
-      top: 1,
+      elevation: 3, // For Android
+      marginVertical: 10,
+      marginHorizontal: 50,
+      alignSelf: "center",
+    },
+    foodImage: {
+      width: "90%",
+      height: "70%", // 60% of the card height
+      borderTopLeftRadius: 12,
+      borderTopRightRadius: 12,
+    },
+    foodDetails: {
+      padding: 16, // Add padding for better spacing
+    },
+    foodTitle: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: "#333",
+    },
+    foodSubtitle: {
+      fontSize: 14,
+      color: "#666",
+      marginTop: 4,
     },
     ratingBadge: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      position: 'absolute',
-      top: 3,
-      right: 30,
-      backgroundColor: 'rgba(100, 98, 96, 0.7)',
+      flexDirection: "row",
+      alignItems: "center",
+      position: "absolute",
+      top: 10,
+      right: 10,
+      backgroundColor: "rgba(255, 255, 255, 0.8)",
       padding: 8,
       borderRadius: 10,
       zIndex: 50,
-      shadowColor: '#000',
+      shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
       shadowRadius: 2,
@@ -51,61 +67,23 @@ export const HomeCards = ({ item, onPress }: Props) => {
     },
     ratingText: {
       fontSize: 12,
-      fontWeight: 'bold',
-      color: '#666',
+      fontWeight: "bold",
+      color: "#666",
       marginLeft: 4,
     },
-    foodImage: {
-      width: '75%',
-      height: '100%',
-    },
-    foodDetails: {
-      marginTop: 10,
-    },
-    foodTitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: '#333',
-    },
-    foodSubtitle: {
-      fontSize: 14,
-      color: '#666',
-      marginTop: 4,
-    },
-    user: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginTop: 10,
-    },
-    portionContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginTop: 16,
-    },
-    portionLabel: {
-      fontSize: 16,
-      fontWeight: '600',
-      color: '#333',
-    },
-    portionValue: {
-      fontSize: 16,
-      fontWeight: '600',
-      color: '#333',
-    },
-   
     actionContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
       marginTop: 16,
     },
     orderButton: {
       flex: 1,
       paddingVertical: 12,
       borderRadius: 8,
-      backgroundColor: '#eab620',
-      alignItems: 'center',
-      shadowColor: '#FFD700',
+      backgroundColor: "#eab620",
+      alignItems: "center",
+      shadowColor: "#FFD700",
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.3,
       shadowRadius: 4,
@@ -114,8 +92,8 @@ export const HomeCards = ({ item, onPress }: Props) => {
     },
     orderButtonText: {
       fontSize: 16,
-      fontWeight: 'bold',
-      color: '#000',
+      fontWeight: "bold",
+      color: "#000",
     },
     favoriteButton: {
       padding: 8,
@@ -157,47 +135,40 @@ export const HomeCards = ({ item, onPress }: Props) => {
     <Animated.View
       style={[styles.cardContainer, { transform: [{ scale: scaleValue }] }]}
     >
-      {/* Rating Badge */}
-      <View style={styles.ratingBadge}>
-        <Image source={icons.star} style={styles.starIcon} />
-        <Text style={styles.ratingText}>
-          {item?.rating || 'N/A'}
-        </Text>
-      </View>
+      <View>
+        {/* Rating Badge */}
+        <View style={styles.ratingBadge}>
+          <Image source={icons.star} style={styles.starIcon} />
+          <Text style={styles.ratingText}>{item?.rating || "N/A"}</Text>
+        </View>
 
-      {/* Food Image */}
-      <Image
-        source={{ uri: item?.image || 'default_image_url' }}
-        style={styles.foodImage}
-        resizeMode="cover"
-      />
+        {/* Food Image */}
+        <Image
+          source={{ uri: item?.image || "default_image_url" }}
+          style={styles.foodImage}
+          resizeMode="cover"
+        />
 
-      {/* Food Details */}
-      <View style={styles.foodDetails}>
-        <Text style={styles.foodTitle}>
-          {item?.title || 'No Title'}
-        </Text>
-        
-        <Text style={styles.foodSubtitle}>
-          {item?.nationality || 'N/A'}
-        </Text>
-        <Text style={styles.foodSubtitle}>
-          {item?.ingredients || 'N/A'}
-        </Text>
-        <Text style={styles.foodSubtitle}>
-          {item?.description || 'N/A'}
-        </Text>
-        <Text style={styles.user}>
+        {/* Food Details */}
+        <View style={styles.foodDetails}>
+          <Text style={styles.foodTitle}>{item?.title || "No Title"}</Text>
           <Text style={styles.foodSubtitle}>
-            {item?.user_id || 'N/A'}
+            {item?.nationality || "N/A"} | {item?.ingredients || "N/A"}
           </Text>
-        </Text>
+          <Text style={styles.foodSubtitle} numberOfLines={2}>
+            {item?.description || "N/A"}
+          </Text>
 
-        {/* Portion and Price */}
-          <View style={styles.portionContainer}>
-            <Text style={styles.portionLabel}>Portion:</Text>
-            <Text style={styles.portionValue}>
-              {item?.portions || 'N/A'}
+          {/* User Info */}
+          <Text style={styles.foodSubtitle}>
+            Posted by: {item?.user_id || "N/A"}
+          </Text>
+
+          {/* Portion and Price */}
+          <View style={{ flexDirection: "row", marginTop: 8 }}>
+            <Text style={styles.foodSubtitle}>Portion: {item?.portions || "N/A"}</Text>
+            <Text style={[styles.foodSubtitle, { marginLeft: 16 }]}>
+              Price: ${item?.price || "N/A"}
             </Text>
           </View>
         </View>
@@ -210,9 +181,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
           >
-            <Text style={styles.orderButtonText}>
-              Make Order
-            </Text>
+            <Text style={styles.orderButtonText}>Make Order</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.favoriteButton}
@@ -225,6 +194,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
             />
           </TouchableOpacity>
         </View>
+      </View>
     </Animated.View>
   );
 };
