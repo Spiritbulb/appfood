@@ -16,7 +16,7 @@ const ChatScreen = () => {
   // Generate DM channel ID (only if recepientId is available)
   const dmChannelId = recepientId && user?.email ? [user.email, recepientId].sort().join('-') : null;
 
-  // Reconnect
+  // Reconnect to the websocket if the connection is lost
   useEffect(() => {
     let reconnectAttempts = 0;
     const maxReconnectAttempts = 5;
