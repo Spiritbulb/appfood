@@ -206,24 +206,34 @@ const Explore = () => {
     console.log("Logout button pressed"); // Check if the button is being pressed
 
     const performLogout = async () => {
-      console.log("Attempting to logout..."); // Check if the async function is being called
       try {
-        const success = await logout();
-        console.log("Logout success:", success); // Check the result of the logout function
-
-        if (success) {
-          Alert.alert("Success", "Logged out successfully");
-          console.log("Redirecting to sign-in screen..."); // Check if the redirect is being triggered
-          router.replace("/sign-in"); // Redirect to the sign-in screen
-        } else {
-          Alert.alert("Error", "Failed to logout");
-          console.log("Logout failed"); // Check if the logout failed
-        }
+          await logout(); // Perform the logout operation
+  
+          // Display a custom alert with a button linking to the website
+          Alert.alert(
+              "You're logged out!",
+              "To logout of your Spiritbulb account, visit spiritbulb.com",
+              [
+                  {
+                      text: "Visit Spiritbulb",
+                      onPress: () => {
+                          window.open("https://www.spiritbulb.com", "_blank"); // Open the website in a new tab
+                      },
+                  },
+                  {
+                      text: "OK",
+                      onPress: () => {
+                          // Redirect to the sign-in page
+                          
+                          router.push('/sign-in');
+                      },
+                  },
+              ]
+          );
       } catch (error) {
-        console.error("Logout error:", error); // Log any errors that occur during logout
-        Alert.alert("Error", "An error occurred during logout");
+          console.error("Logout failed:", error);
       }
-    };
+  };
 
     performLogout();
   };
