@@ -16,7 +16,8 @@ export const HomeCards = ({ item, onPress }: Props) => {
       width: "90%",
       height: 700,
       borderRadius: 12,
-      backgroundColor: "#000",
+      backgroundColor: "#fff",
+      justifyContent: "space-between",
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.4,
@@ -25,15 +26,16 @@ export const HomeCards = ({ item, onPress }: Props) => {
       marginVertical: 10,
       marginHorizontal: 50,
       alignSelf: "center",
+      position: "relative",
     },
     foodImage: {
       width: "90%",
-      height: "70%", // 60% of the card height
-      borderTopLeftRadius: 12,
-      borderTopRightRadius: 12,
+      height: "70%",
+      borderRadius: 12,
+      resizeMode: "contain",
     },
     foodDetails: {
-      padding: 16, // Add padding for better spacing
+      padding: 10,
     },
     foodTitle: {
       fontSize: 18,
@@ -43,7 +45,8 @@ export const HomeCards = ({ item, onPress }: Props) => {
     foodSubtitle: {
       fontSize: 14,
       color: "#666",
-      marginTop: 4,
+      marginTop: 1,
+      marginBottom: 1,
     },
     ratingBadge: {
       flexDirection: "row",
@@ -75,7 +78,14 @@ export const HomeCards = ({ item, onPress }: Props) => {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginTop: 16,
+      position: "absolute",
+      bottom: 0,
+      width: "100%",
+      paddingHorizontal: 15,
+      paddingBottom: 0,
+      borderBottomLeftRadius: 12,
+      borderBottomRightRadius: 12,
+      marginTop: 4,
     },
     orderButton: {
       flex: 1,
@@ -89,6 +99,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       shadowRadius: 4,
       elevation: 3, // For Android
       marginRight: 16,
+      marginBottom: 1,
     },
     orderButtonText: {
       fontSize: 16,
@@ -144,7 +155,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
 
         {/* Food Image */}
         <Image
-          source={{ uri: item?.image || "default_image_url" }}
+          source={{ uri: item?.image || 'default_image_url' }}
           style={styles.foodImage}
           resizeMode="cover"
         />
@@ -181,7 +192,9 @@ export const HomeCards = ({ item, onPress }: Props) => {
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
           >
-            <Text style={styles.orderButtonText}>Make Order</Text>
+            <Text style={styles.orderButtonText}>
+              Make Order
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.favoriteButton}
