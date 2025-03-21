@@ -21,7 +21,7 @@
     "@react-navigation/stack": "^7.1.2",
     "@tsconfig/node18": "^18.2.4",
     "@uidotdev/usehooks": "^2.4.1",
-    "appwrite": "^17.0.0",
+   
     "axios": "^1.8.1",
     "expo": "^52.0.38",
     "expo-auth-session": "~6.0.3",
@@ -49,7 +49,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "^0.76.7",
-    "react-native-appwrite": "^0.7.0",
+   
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-reanimated": "^3.16.7",

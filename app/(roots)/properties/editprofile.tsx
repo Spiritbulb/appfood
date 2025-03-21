@@ -12,7 +12,7 @@ import {
     Platform,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Client, Databases, Storage } from 'appwrite'; // Appwrite SDK
+
 import { StatusBar } from 'expo-status-bar';
 
 // Define the FormData interface
@@ -21,13 +21,9 @@ interface FormData {
     name: string;
 }
 
-// Initialize Appwrite
-const client = new Client()
-    .setEndpoint('https://cloud.appwrite.io/v1') // Your Appwrite endpoint
-    .setProject('6781017700246429b65a'); // Your Appwrite project ID
 
-const databases = new Databases(client);
-const storage = new Storage(client);
+
+
 
 const EditProfile: React.FC = () => {
     const [formData, setFormData] = useState<FormData>({
@@ -59,36 +55,17 @@ const EditProfile: React.FC = () => {
         }
     };
 
-    const uploadImageToAppwrite = async (imageUri: string): Promise<string | undefined> => {
-        try {
-            // Convert the image URI to a Blob or File object
-            const response = await fetch(imageUri);
-            const blob = await response.blob();
-            const file = new File([blob], `image_${Date.now()}.jpg`, { type: 'image/jpeg' });
+    /*const uploadImage = async (imageUri: string): Promise<string | undefined> => {
+    }*/
 
-            const uploadResponse = await storage.createFile(
-                '67c4a5fd0017cc988880', // Bucket ID
-                'unique()',
-                file
-            );
-            console.log('Image uploaded:', uploadResponse);
-
-            const fileUrl = storage.getFileView('67c4a5fd0017cc988880', uploadResponse.$id);
-            return fileUrl;
-        } catch (error) {
-            console.error('Error uploading image:', error);
-            throw error;
-        }
-    };
-
-    const handleImageUpload = async () => {
+  /*  const handleImageUpload = async () => {
         if (!selectedImage) {
             Alert.alert('Error', 'Please select an image first.');
             return;
         }
 
         try {
-            const fileUrl = await uploadImageToAppwrite(selectedImage);
+            const fileUrl = await uploadImageTo(selectedImage);
             if (fileUrl) {
                 handleChange('image', fileUrl); // Store the image URL in state
                 Alert.alert('Success', 'Image uploaded successfully!');
@@ -99,9 +76,9 @@ const EditProfile: React.FC = () => {
             console.error('Error uploading image:', error);
             Alert.alert('Error', 'Failed to upload image.');
         }
-    };
+    };*/
 
-    const saveFoodItem = async (formData: FormData) => {
+   /* const saveFoodItem = async (formData: FormData) => {
         try {
             const response = await databases.createDocument(
                 '679bbd65000ae52d302b', // Replace with your database ID
@@ -118,9 +95,9 @@ const EditProfile: React.FC = () => {
             console.error('Error updating profile:', error);
             throw error;
         }
-    };
+    };*/
 
-    const handleSubmit = async () => {
+    /*const handleSubmit = async () => {
         if (!formData.image || !formData.name) {
             Alert.alert('Error', 'Please fill in all fields.');
             return;
@@ -133,7 +110,7 @@ const EditProfile: React.FC = () => {
             console.error('Error updating item:', error);
             Alert.alert('Error', 'Failed to update user item.');
         }
-    };
+    };*/
 
     return (
         <KeyboardAvoidingView
