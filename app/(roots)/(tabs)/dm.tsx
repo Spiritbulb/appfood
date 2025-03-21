@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   recipientList: {
-    padding: 10,
+    paddingTop: 30,
   },
   recipientItem: {
     padding: 15,
