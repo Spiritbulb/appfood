@@ -168,12 +168,7 @@ const EditProfile: React.FC = () => {
     };
 
 
-
-
-
     const handleSubmit = async () => {
-
-
 
         console.log("IMG: ", formData?.image);
         const response = await fetch('https://plate-pals.handler.spiritbulb.com/api/edit-profile', {
@@ -189,11 +184,6 @@ const EditProfile: React.FC = () => {
         }
 
         Alert.alert('Success', 'Profile updated!');
-
-
-
-
-
 
     };
 
@@ -245,14 +235,11 @@ const EditProfile: React.FC = () => {
                     value={formData.name}
                     onChangeText={(text) => handleChange('name', text)} // Fixed: Changed 'title' to 'name'
                 />
-
-
-
                 <TouchableOpacity style={styles.button} onPress={handleImageUpload}>
                     <Text style={styles.buttonText}>Upload Image</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>Update Profile</Text>
+                <TouchableOpacity style={styles.postbutton} onPress={handleSubmit}>
+                    <Text style={styles.postbuttonText}>Update Profile</Text>
                 </TouchableOpacity>
             </ScrollView>
 
@@ -275,8 +262,8 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         padding: 30,
         justifyContent: 'center',
-        backgroundColor: '#666',
-        backgroundImage: images.foodimage,
+        backgroundColor: '#d4cdbb',
+        marginBottom: 0,
     },
     input: {
         height: 50,
@@ -300,10 +287,28 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         marginBottom: 15,
     },
+    postbutton: {
+        width: '100%',
+        paddingVertical: 12,
+        backgroundColor: '#500000',
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        marginBottom: 15,
+    },
     buttonText: {
         fontSize: 16,
         fontWeight: 'bold',
         color: '#000',
+    },
+    postbuttonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#fff',
     },
     placeholderText: {
         textAlign: 'center',
@@ -319,7 +324,8 @@ const styles = StyleSheet.create({
     image: {
         width: '100%',
         height: 320, // Adjust height as needed
-        borderRadius: 18,
+        borderRadius: 160,
+        borderWidth: 0,
         marginBottom: 15,
         marginLeft: 17,
         position: 'relative',
@@ -330,12 +336,12 @@ const styles = StyleSheet.create({
         position: 'absolute',
         width: '100%',
         height: 320,
-        top: 9,
-        right: 0,
+        top: 3,
+        right: 10,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.17)', // Slight dark overlay for better visibility
-        borderRadius: 8,
+        borderRadius: 18,
     },
     foodTitle: {
         fontSize: 20,
