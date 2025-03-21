@@ -1,12 +1,36 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, FlatList, StyleSheet, TextInput, Button, Text } from 'react-native';
-import ChatMessage from './chatmessage'; // Assuming you have a ChatMessage component for rendering individual messages
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, StyleSheet, TextInput, Button, Text, TouchableOpacity } from 'react-native';
+import ChatMessage from './chatmessage';
+import { useWebSocket } from './WebSocketManager';
 
-const ChatHistory = ({ user, recepientId, messages, setMessages, dmChannelId, onSendMessage }) => {
-  const socket = useRef<WebSocket | null>(null);
+interface ChatHistoryProps {
+  user: { email: string };
+  recepientId: string;
+  dmChannelId: string;
+  onGoBack: () => void; // Add onGoBack prop
+}
+
+const ChatHistory: React.FC<ChatHistoryProps> = ({ user, recepientId, dmChannelId, onGoBack }) => {
+  const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
+  const { sendMessage, isConnected, setOnMessageCallback } = useWebSocket();
 
-  // Function to send a message
+  // Fetch chat history
+  useEffect(() => {
+    const fetchChatHistory = async () => {
+      try {
+        const response = await fetch(`https://chat.spiritbulb.workers.dev/dm/${dmChannelId}/history`);
+        const history = await response.json();
+        setMessages(history);
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+      }
+    };
+
+    fetchChatHistory();
+  }, [dmChannelId]);
+
+  // Handle sending a message
   const handleSendMessage = () => {
     if (inputText.trim() && recepientId) {
       const message = {
@@ -14,47 +38,20 @@ const ChatHistory = ({ user, recepientId, messages, setMessages, dmChannelId, on
         to: recepientId,
         text: inputText,
         timestamp: Date.now(),
-        from: user?.email, // Add the sender's email
+        from: user?.email,
       };
-      onSendMessage(message); // Send the message
+      sendMessage(message); // Send the message via WebSocket
+      setMessages((prevMessages) => [...prevMessages, message]); // Add the message to local state
       setInputText(''); // Clear the input field
     }
   };
 
-  // Connect to WebSocket for real-time updates
+  // Set callback for incoming messages
   useEffect(() => {
-    if (!recepientId || !user?.email || !dmChannelId) return;
-
-    const wsUrl = `wss://chat.spiritbulb.workers.dev/dm/${dmChannelId}/ws?userId=${user.email}`;
-    socket.current = new WebSocket(wsUrl);
-
-    socket.current.onopen = () => {
-      console.log('WebSocket connection opened');
-    };
-
-    socket.current.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-        setMessages((prevMessages) => [...prevMessages, message]); // Add the new message to the list
-      } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
-      }
-    };
-
-    socket.current.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    socket.current.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
-
-    return () => {
-      if (socket.current) {
-        socket.current.close();
-      }
-    };
-  }, [user?.email, dmChannelId, recepientId]);
+    setOnMessageCallback((message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+  }, []);
 
   // Render a single chat message
   const renderMessage = ({ item }) => (
@@ -66,23 +63,23 @@ const ChatHistory = ({ user, recepientId, messages, setMessages, dmChannelId, on
 
   return (
     <View style={styles.container}>
-      {/* Recipient Display at the Top */}
-      <View style={styles.recipientContainer}>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={onGoBack} style={styles.backButton}>
+          <Text style={styles.backButtonText}>← Back</Text>
+        </TouchableOpacity>
         <Text style={styles.recipientText}>Chatting with: {recepientId}</Text>
       </View>
 
-      {/* Chat History */}
       <View style={styles.chatContainer}>
         <FlatList
           data={messages}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderMessage}
           contentContainerStyle={styles.messagesContainer}
-          inverted // Start from the bottom
+          
         />
       </View>
 
-      {/* Input field and send button */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -94,7 +91,7 @@ const ChatHistory = ({ user, recepientId, messages, setMessages, dmChannelId, on
         <Button
           title="Send"
           onPress={handleSendMessage}
-          disabled={!inputText.trim()}
+          disabled={!inputText.trim() || !isConnected}
         />
       </View>
     </View>
@@ -105,26 +102,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  recipientContainer: {
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
     marginTop: 30,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     backgroundColor: '#f5f5f5',
   },
+  backButton: {
+    marginRight: 10,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: '#007AFF',
+  },
   recipientText: {
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
   chatContainer: {
-    flex: 0.8, 
+    flex: 0.8,
   },
   messagesContainer: {
     flexGrow: 1,
     justifyContent: 'flex-end',
     paddingBottom: 10,
-    marginLeft: 20, // Add some padding at the bottom
+    marginLeft: 20,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -143,10 +148,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: '100%',
     width: '90%',
-  },
-  sendButton: {
-    flex: 1,
-    marginLeft: 100,
   },
 });
 

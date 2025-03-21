@@ -1,47 +1,82 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, FlatList, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useGlobalContext } from '@/lib/global-provider';
 import { useLocalSearchParams } from 'expo-router';
-import NewChat from '@/components/newchat';
 import ChatHistory from '@/components/chathistory';
+import { useWebSocket } from '@/components/WebSocketManager';
 
-const ChatScreen = () => {
+interface Recipient {
+  recepientId: string;
+  latestMessage?: { timestamp: number };
+}
+
+const ChatsPage = () => {
   const { user } = useGlobalContext();
-  const { recepientId } = useLocalSearchParams();
-  const [messages, setMessages] = useState([]);
+  const { recepientId } = useLocalSearchParams(); // Extract recepientId from query params
+  const [recipients, setRecipients] = useState<Recipient[]>([]);
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const { connect, disconnect } = useWebSocket();
 
-  // Generate DM channel ID (only if recepientId is available)
-  const dmChannelId = recepientId && user?.email ? [user.email, recepientId].sort().join('-') : null;
-
-  // Fetch chat history on mount (only if recepientId is available)
+  // Set selectedChat if recepientId is provided in query params
   useEffect(() => {
-    if (!recepientId || !dmChannelId) {
-      setLoading(false); // Skip fetching if recepientId or dmChannelId is missing
-      return;
+    if (recepientId) {
+      setSelectedChat(recepientId);
     }
+  }, [recepientId]);
 
-    const fetchChatHistory = async () => {
+  // Fetch active chats (recipients)
+  useEffect(() => {
+    const fetchRecipients = async () => {
       try {
-        const response = await fetch(`https://chat.spiritbulb.workers.dev/dm/${dmChannelId}/history`);
-        const history = await response.json();
-        setMessages(history);
+        const response = await fetch(`https://chat.spiritbulb.workers.dev/dm/recipients?userId=${user.email}`);
+        const data = await response.json();
+        setRecipients(data);
       } catch (error) {
-        console.error('Error fetching chat history:', error);
+        console.error('Error fetching recipients:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchChatHistory();
-  }, [dmChannelId, recepientId]);
+    if (user?.email) {
+      fetchRecipients();
+    }
+  }, [user?.email]);
 
-  // Handle sending the first message
-  const handleSendFirstMessage = (message) => {
-    setMessages([message]); // Add the first message to the chat history
+  // Generate DM channel ID
+  const getDmChannelId = (recepientId: string): string => {
+    return [user.email, recepientId].sort().join('-');
   };
 
-  // Render loading spinner
+  // Reopen WebSocket connection when a user starts typing
+  useEffect(() => {
+    if (selectedChat) {
+      const dmChannelId = getDmChannelId(selectedChat);
+      const wsUrl = `wss://chat.spiritbulb.workers.dev/dm/${dmChannelId}/ws?userId=${user.email}`;
+      connect(wsUrl);
+    }
+
+    return () => {
+      disconnect();
+    };
+  }, [selectedChat]);
+
+  // Render a single recipient item
+  const renderRecipient = ({ item }: { item: Recipient }) => (
+    <TouchableOpacity
+      style={styles.recipientItem}
+      onPress={() => setSelectedChat(item.recepientId)}
+    >
+      <Text style={styles.recipientText}>Chat with: {item.recepientId}</Text>
+      {item.latestMessage && (
+        <Text style={styles.timestampText}>
+          Last message: {new Date(item.latestMessage.timestamp).toLocaleString()}
+        </Text>
+      )}
+    </TouchableOpacity>
+  );
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -50,22 +85,21 @@ const ChatScreen = () => {
     );
   }
 
-  // Render NewChat if there are no messages, otherwise render ChatHistory
   return (
     <View style={styles.container}>
-      {messages.length === 0 ? (
-        <NewChat
-          user={user}
-          recepientId={recepientId}
-          onSendFirstMessage={handleSendFirstMessage}
-        />
-      ) : (
+      {selectedChat ? (
         <ChatHistory
           user={user}
-          recepientId={recepientId}
-          messages={messages}
-          setMessages={setMessages}
-          dmChannelId={dmChannelId}
+          recepientId={selectedChat}
+          dmChannelId={getDmChannelId(selectedChat)}
+          onGoBack={() => setSelectedChat(null)} // Add onGoBack prop
+        />
+      ) : (
+        <FlatList
+          data={recipients}
+          keyExtractor={(item) => item.recepientId}
+          renderItem={renderRecipient}
+          contentContainerStyle={styles.recipientList}
         />
       )}
     </View>
@@ -81,6 +115,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  recipientList: {
+    padding: 10,
+  },
+  recipientItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  recipientText: {
+    fontSize: 16,
+  },
+  timestampText: {
+    fontSize: 12,
+    color: '#666',
+  },
 });
 
-export default ChatScreen;
+export default ChatsPage;
