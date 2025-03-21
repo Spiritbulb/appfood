@@ -1,17 +1,19 @@
 {
   "expo": {
-    "name": "appfood",
-    "slug": "appfood",
+    "name": "Plate Pals",
+    "slug": "plate-pals",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "icon": "./assets/images/icon3.png",
+    "scheme": "plate-pals",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.sb.platepals",
+      
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#500000"

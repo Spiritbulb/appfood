@@ -7,6 +7,7 @@ import { View } from "react-native";
 import { Header } from "react-native/Libraries/NewAppScreen";
 import { ThemeProvider } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
+import { WebSocketProvider } from "@/components/WebSocketManager";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -32,8 +33,9 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
   return (
     <GlobalProvider>
-      <Stack screenOptions={{ headerShown: false }} />
-
+      <WebSocketProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+      </WebSocketProvider>
     </GlobalProvider>
   );
 
