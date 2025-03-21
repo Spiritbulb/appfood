@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -49,6 +50,44 @@ const SettingsItem = ({
 
 const Profile = () => {
   const { user, logout } = useGlobalContext();
+  const [fetchedUser, setFetchedUser] = useState<{ name: string; image: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch user data from the API
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(
+          `https://plate-pals.handler.spiritbulb.com/api/user-data?query=${user?.email}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+        const data = await response.json();
+
+        // Check if the response contains results
+        if (data.success && data.results && data.results.length > 0) {
+          const userData = data.results[0]; // Use the first result
+          setFetchedUser({
+            name: userData.name,
+            image: userData.image,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setError("Failed to fetch user data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user?.email) {
+      fetchUserData();
+    } else {
+      setLoading(false);
+    }
+  }, [user?.email]);
 
   const handleLogout = async () => {
     const success = await logout();
@@ -57,22 +96,20 @@ const Profile = () => {
         "You're logged out!",
         "To logout of your Spiritbulb account, visit spiritbulb.com",
         [
-            {
-                text: "Visit Spiritbulb",
-                onPress: () => {
-                    window.open("https://www.spiritbulb.com", "_blank"); // Open the website in a new tab
-                },
+          {
+            text: "Visit Spiritbulb",
+            onPress: () => {
+              window.open("https://www.spiritbulb.com", "_blank"); // Open the website in a new tab
             },
-            {
-                text: "OK",
-                onPress: () => {
-                    // Redirect to the sign-in page
-                    
-                    router.push('/sign-in');
-                },
+          },
+          {
+            text: "OK",
+            onPress: () => {
+              router.push("/sign-in");
             },
+          },
         ]
-    );
+      );
       router.replace("/sign-in"); // Redirect to the sign-in screen
     } else {
       Alert.alert("Error", "Failed to logout");
@@ -85,6 +122,26 @@ const Profile = () => {
   const handleExtraPagePress = () => router.push("/properties/extrapage");
   const handleEditProfilePress = () => router.push("/properties/editprofile");
   const handleNotificationsPress = () => router.push("/properties/myorders");
+
+  // Use fetched user data if available, otherwise fall back to global context
+  const displayName = fetchedUser?.name || user?.name || "User";
+  const displayPicture = fetchedUser?.image || user?.picture;
+
+  if (loading) {
+    return (
+      <SafeAreaView className="h-full bg-white">
+        <Text className="text-center mt-10">Loading...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView className="h-full bg-white">
+        <Text className="text-center mt-10 text-danger">{error}</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="h-full bg-white">
@@ -103,10 +160,10 @@ const Profile = () => {
           <TouchableOpacity onPress={handleEditProfilePress}>
             <View className="flex flex-col items-center relative mt-5">
               <Image
-                source={{ uri: user?.picture }}
+                source={{ uri: displayPicture }}
                 className="size-44 relative rounded-full"
               />
-              <Text className="text-2xl font-rubik-bold mt-2">{user?.name}</Text>
+              <Text className="text-2xl font-rubik-bold mt-2">{displayName}</Text>
             </View>
           </TouchableOpacity>
         </View>

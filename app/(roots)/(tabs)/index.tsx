@@ -213,7 +213,7 @@ const Explore = () => {
         // Display a custom alert with a button linking to the website
         Alert.alert(
           "You're logged out!",
-          "To logout of your Spiritbulb account, visit spiritbulb.com",
+          "To logout of your Spiritbulb account, visit spiritbulb",
           [
             {
               text: "Visit Spiritbulb",

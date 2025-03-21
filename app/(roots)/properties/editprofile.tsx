@@ -12,23 +12,25 @@ import {
     Platform,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-
+import { useGlobalContext } from '@/lib/global-provider';
 import { StatusBar } from 'expo-status-bar';
 
 // Define the FormData interface
 interface FormData {
     image: string; // This will store the image URL
     name: string;
+    user_id: string | undefined;
 }
 
 
 
-
-
 const EditProfile: React.FC = () => {
+    const context = useGlobalContext();
+    const user = context.user;
     const [formData, setFormData] = useState<FormData>({
         image: '', // This will store the image URL
         name: '',
+        user_id: user?.email,
     });
     const [selectedImage, setSelectedImage] = useState<string | null>(null); // For preview
 
@@ -46,7 +48,7 @@ const EditProfile: React.FC = () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true, // Allow the user to crop/edit the image
-            aspect: [3, 4], // Aspect ratio for cropping
+            aspect: [1, 1], // Aspect ratio for cropping
             quality: 1, // Image quality (0 to 1)
         });
 
@@ -55,17 +57,55 @@ const EditProfile: React.FC = () => {
         }
     };
 
-    /*const uploadImage = async (imageUri: string): Promise<string | undefined> => {
-    }*/
+    const uploadImage = async (imageUri: string): Promise<string | undefined> => {
+        try {
+            const response = await fetch(imageUri);
+            const blob = await response.blob();
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            return new Promise((resolve, reject) => {
+                reader.onloadend = async () => {
+                    const base64data = reader.result as string;
+                    const base64 = base64data.split(',')[1]; // Remove the data URL prefix
+                    const fileName = `user_${formData.user_id}_${Date.now()}.png`; // Generate a unique file name
 
-  /*  const handleImageUpload = async () => {
+                    const uploadResponse = await fetch('https://plate-pals.handler.spiritbulb.com/upload-image', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            file: base64,
+                            fileName: fileName,
+                        }),
+                    });
+
+                    if (!uploadResponse.ok) {
+                        throw new Error('Failed to upload image');
+                    }
+
+                    const { fileUrl } = await uploadResponse.json();
+                    resolve(fileUrl);
+                };
+                reader.onerror = () => {
+                    reject(new Error('Failed to read image'));
+                };
+            });
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            Alert.alert('Error', 'Failed to upload image.');
+            return undefined;
+        }
+    };
+
+    const handleImageUpload = async () => {
         if (!selectedImage) {
             Alert.alert('Error', 'Please select an image first.');
             return;
         }
 
         try {
-            const fileUrl = await uploadImageTo(selectedImage);
+            const fileUrl = await uploadImage(selectedImage);
             if (fileUrl) {
                 handleChange('image', fileUrl); // Store the image URL in state
                 Alert.alert('Success', 'Image uploaded successfully!');
@@ -76,41 +116,33 @@ const EditProfile: React.FC = () => {
             console.error('Error uploading image:', error);
             Alert.alert('Error', 'Failed to upload image.');
         }
-    };*/
+    };
 
-   /* const saveFoodItem = async (formData: FormData) => {
-        try {
-            const response = await databases.createDocument(
-                '679bbd65000ae52d302b', // Replace with your database ID
-                '679bbf04000441fd0477', // Replace with your collection ID
-                'unique()', // Unique ID for the document
-                {
-                    image: formData.image,
-                    name: formData.name,
-                }
-            );
-            console.log('New profile saved:', response);
-            return response;
-        } catch (error) {
-            console.error('Error updating profile:', error);
-            throw error;
-        }
-    };*/
-
-    /*const handleSubmit = async () => {
+    const handleSubmit = async () => {
         if (!formData.image || !formData.name) {
             Alert.alert('Error', 'Please fill in all fields.');
             return;
         }
 
         try {
-            await saveFoodItem(formData);
+            const response = await fetch('https://plate-pals.handler.spiritbulb.com/api/edit-profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update profile');
+            }
+
             Alert.alert('Success', 'Profile updated!');
         } catch (error) {
-            console.error('Error updating item:', error);
-            Alert.alert('Error', 'Failed to update user item.');
+            console.error('Error updating profile:', error);
+            Alert.alert('Error', 'Failed to update profile.');
         }
-    };*/
+    };
 
     return (
         <KeyboardAvoidingView
