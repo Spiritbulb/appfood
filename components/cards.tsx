@@ -182,7 +182,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
 
           {/* Portion  */}
           <View style={{ flexDirection: "row", marginTop: 8 }}>
-            <Text style={styles.foodSubtitle}>Portion: {item?.portions || "N/A"}</Text>
+            <Text style={styles.foodSubtitle}>Portion: {item?.portion || "N/A"}</Text>
             <Text style={[styles.foodSubtitle, { marginLeft: 16 }]}>
 
             </Text>
