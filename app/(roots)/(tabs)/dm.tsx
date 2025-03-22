@@ -12,6 +12,10 @@ interface Recipient {
   latestMessage?: { timestamp: number };
 }
 
+interface RecipientDetails {
+  [key: string]: string; // Maps recipientId to recipient name
+}
+
 // Configure notification handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -25,6 +29,7 @@ const ChatsPage = () => {
   const { user } = useGlobalContext();
   const { recepientId } = useLocalSearchParams<{ recepientId: string }>();
   const [recipients, setRecipients] = useState<Recipient[]>([]);
+  const [recipientDetails, setRecipientDetails] = useState<RecipientDetails>({}); // Store recipient names
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasNewMessages, setHasNewMessages] = useState(false); // Track new messages
@@ -62,6 +67,21 @@ const ChatsPage = () => {
         const response = await fetch(`https://chat.spiritbulb.workers.dev/dm/recipients?userId=${user?.email}`);
         const data = await response.json();
         setRecipients(data);
+
+        // Fetch recipient details for each recipient
+        const details: RecipientDetails = {};
+        for (const recipient of data) {
+          const recipientResponse = await fetch(
+            `https://plate-pals.handler.spiritbulb.com/api/user-data?query=${recipient.recepientId}`
+          );
+          if (recipientResponse.ok) {
+            const recipientData = await recipientResponse.json();
+            if (recipientData.success && recipientData.results && recipientData.results.length > 0) {
+              details[recipient.recepientId] = recipientData.results[0].name; // Store the recipient's name
+            }
+          }
+        }
+        setRecipientDetails(details);
       } catch (error) {
         console.error('Error fetching recipients:', error);
       } finally {
@@ -103,7 +123,7 @@ const ChatsPage = () => {
         Notifications.scheduleNotificationAsync({
           content: {
             title: 'New Message',
-            body: `You have a new message from ${latestMessage.sender}`,
+            body: `You have a new message from ${recipientDetails[latestMessage.sender] || latestMessage.sender}`,
             sound: true, // Play a sound
             data: { sender: latestMessage.sender }, // Optional: Add custom data
           },
@@ -119,7 +139,9 @@ const ChatsPage = () => {
       style={styles.recipientItem}
       onPress={() => setSelectedChat(item.recepientId)}
     >
-      <Text style={styles.recipientText}>Chat with: {item.recepientId}</Text>
+      <Text style={styles.recipientText}>
+        {recipientDetails[item.recepientId] || item.recepientId}
+      </Text>
       {item.latestMessage && (
         <Text style={styles.timestampText}>
           Last message: {new Date(item.latestMessage.timestamp).toLocaleString()}
