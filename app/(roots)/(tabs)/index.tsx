@@ -10,6 +10,7 @@ import {
   Keyboard,
   Dimensions,
   Animated,
+  RefreshControl, // Add RefreshControl
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { router } from "expo-router";
@@ -79,6 +80,7 @@ const Explore = () => {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false); // Add refreshing state
 
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -96,8 +98,19 @@ const Explore = () => {
       console.error('Error fetching food items:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false); // Stop refreshing
     }
   };
+
+  // Handle drag-to-refresh
+  const onRefresh = () => {
+    setRefreshing(true); // Start refreshing
+    fetchFooditems(); // Re-fetch data
+  };
+
+  useEffect(() => {
+    fetchFooditems();
+  }, []);
 
   // Fetch more data for infinite scroll
   const fetchMoreData = async () => {
@@ -130,10 +143,6 @@ const Explore = () => {
       return []; // Return an empty array in case of an error
     }
   };
-
-  useEffect(() => {
-    fetchFooditems();
-  }, []);
 
   // Track keyboard visibility
   useEffect(() => {
@@ -213,7 +222,7 @@ const Explore = () => {
         // Display a custom alert with a button linking to the website
         Alert.alert(
           "You're logged out!",
-          "To logout of your Spiritbulb account, visit spiritbulb",
+          "To logout of your Spiritbulb account, visit spiritbulb.com",
           [
             {
               text: "Visit Spiritbulb",
@@ -337,13 +346,21 @@ const Explore = () => {
           data={searchResults}
           keyExtractor={(item) => item.item_id.toString()}
           renderItem={({ item }) => (
-            <View style={{ marginBottom: 3 }}>
+            <View style={{ marginBottom: 3, marginTop: 7 }}>
               <HomeCards item={item} onPress={() => handleCardPress(item)} />
             </View>
           )}
+          inverted={true}
           onEndReached={fetchMoreData}
           contentContainerStyle={{ gap: 50 }}
           onEndReachedThreshold={0.1}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={['#76422b']} // Customize the refresh indicator color
+            />
+          }
           ListEmptyComponent={
             loading ? (
               <ActivityIndicator size="large" className="text-primary-300 mt-5" />
@@ -367,9 +384,17 @@ const Explore = () => {
               <HomeCards item={item} onPress={() => handleCardPress(item)} />
             </View>
           )}
+          inverted={true}
           onEndReached={fetchMoreData}
-          contentContainerStyle={{ gap: 20 }}
+          contentContainerStyle={{ gap: 50 }}
           onEndReachedThreshold={0.1}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={['#76422b']} // Customize the refresh indicator color
+            />
+          }
           ListEmptyComponent={
             loading ? (
               <ActivityIndicator size="large" className="text-primary-300 mt-5" />

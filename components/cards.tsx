@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet, Animated, Easing } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 
@@ -90,7 +90,6 @@ export const HomeCards = ({ item, onPress }: Props) => {
       borderBottomLeftRadius: 12,
       borderBottomRightRadius: 12,
       marginTop: 140,
-
     },
     orderButton: {
       flex: 1,
@@ -118,10 +117,47 @@ export const HomeCards = ({ item, onPress }: Props) => {
       width: 24,
       height: 24,
     },
+    userInfoContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginTop: 8,
+    },
+    userImage: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      marginRight: 8,
+    },
   });
 
   const [isFavorite, setIsFavorite] = useState(false);
   const [scaleValue] = useState(new Animated.Value(1));
+  const [userName, setUserName] = useState<string | null>(null); // Store user name
+  const [userImage, setUserImage] = useState<string | null>(null); // Store user image
+
+  // Fetch user name and image
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await fetch(
+          `https://plate-pals.handler.spiritbulb.com/api/user-data?query=${item?.user_id}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.results && data.results.length > 0) {
+            setUserName(data.results[0].name); // Set the user's name
+            setUserImage(data.results[0].image); // Set the user's image
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    if (item?.user_id) {
+      fetchUserDetails();
+    }
+  }, [item?.user_id]);
 
   if (!item) {
     return null;
@@ -176,9 +212,15 @@ export const HomeCards = ({ item, onPress }: Props) => {
           </Text>
 
           {/* User Info */}
-          <Text style={styles.foodSubtitle}>
-            Posted by: {item?.user_id || "N/A"}
-          </Text>
+          <View style={styles.userInfoContainer}>
+            <Image
+              source={{ uri: userImage || 'https://via.placeholder.com/24' }} // Fallback to a placeholder image
+              style={styles.userImage}
+            />
+            <Text style={styles.foodSubtitle}>
+              {userName || "Food Lover"}
+            </Text>
+          </View>
 
           {/* Portion  */}
           <View style={{ flexDirection: "row", marginTop: 8 }}>
@@ -261,6 +303,7 @@ export const OrderCards = ({ item, onPress }: Props) => {
       color: '#666',
       marginTop: 4,
     },
+    
     portionContainer: {
       flexDirection: 'row',
       alignItems: 'center',

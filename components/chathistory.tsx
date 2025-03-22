@@ -13,6 +13,7 @@ interface ChatHistoryProps {
 const ChatHistory: React.FC<ChatHistoryProps> = ({ user, recepientId, dmChannelId, onGoBack }) => {
   const [messages, setMessages] = useState<any[]>([]);
   const [inputText, setInputText] = useState('');
+  const [recipientName, setRecipientName] = useState<string | null>(null); // Store recipient name
   const { sendMessage, isConnected, setOnMessageCallback } = useWebSocket();
 
   // Fetch chat history
@@ -29,6 +30,29 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ user, recepientId, dmChannelI
 
     fetchChatHistory();
   }, [dmChannelId]);
+
+  // Fetch recipient name
+  useEffect(() => {
+    const fetchRecipientName = async () => {
+      try {
+        const response = await fetch(
+          `https://plate-pals.handler.spiritbulb.com/api/user-data?query=${recepientId}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.results && data.results.length > 0) {
+            setRecipientName(data.results[0].name); // Set the recipient's name
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching recipient name:', error);
+      }
+    };
+
+    if (recepientId) {
+      fetchRecipientName();
+    }
+  }, [recepientId]);
 
   // Handle sending a message
   const handleSendMessage = () => {
@@ -65,9 +89,11 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ user, recepientId, dmChannelI
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={onGoBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Text style={styles.backButtonText}>⬅</Text>
         </TouchableOpacity>
-        <Text style={styles.recipientText}>Chatting with: {recepientId}</Text>
+        <Text style={styles.recipientText}>
+          {recipientName || 'Recipient'}
+        </Text>
       </View>
 
       <View style={styles.chatContainer}>
@@ -76,7 +102,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ user, recepientId, dmChannelI
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderMessage}
           contentContainerStyle={styles.messagesContainer}
-          
         />
       </View>
 
@@ -115,12 +140,22 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   backButtonText: {
-    fontSize: 16,
-    color: '#007AFF',
+    fontSize: 20,
+    color: '#fff',
+    backgroundColor: '#eab520',
+    borderWidth: 1,
+    padding: 7,
+    paddingTop: 1,
+    paddingRight: 15,
+    paddingLeft: 15,
+    alignSelf: 'center',
+    borderRadius: 5,
+    borderColor: '#eab520',
   },
   recipientText: {
     fontSize: 16,
     fontWeight: 'bold',
+    marginLeft: 83,
   },
   chatContainer: {
     flex: 0.8,
@@ -146,7 +181,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     bottom: 0,
-    height: '100%',
+    height: 50,
     width: '90%',
   },
 });

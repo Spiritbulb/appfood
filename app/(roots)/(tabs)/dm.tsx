@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, TouchableOpacity, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, FlatList, TouchableOpacity, Text, StyleSheet, ActivityIndicator, Alert, Image, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // For the bell icon
 import * as Notifications from 'expo-notifications'; // For notifications
 import { useGlobalContext } from '@/lib/global-provider';
@@ -9,11 +9,11 @@ import { useWebSocket } from '@/components/WebSocketManager';
 
 interface Recipient {
   recepientId: string;
-  latestMessage?: { timestamp: number };
+  latestMessage?: { timestamp: number; text: string }; // Add text to latestMessage
 }
 
 interface RecipientDetails {
-  [key: string]: string; // Maps recipientId to recipient name
+  [key: string]: { name: string; image: string }; // Maps recipientId to recipient name and image
 }
 
 // Configure notification handler
@@ -29,109 +29,64 @@ const ChatsPage = () => {
   const { user } = useGlobalContext();
   const { recepientId } = useLocalSearchParams<{ recepientId: string }>();
   const [recipients, setRecipients] = useState<Recipient[]>([]);
-  const [recipientDetails, setRecipientDetails] = useState<RecipientDetails>({}); // Store recipient names
+  const [recipientDetails, setRecipientDetails] = useState<RecipientDetails>({}); // Store recipient names and images
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasNewMessages, setHasNewMessages] = useState(false); // Track new messages
+  const [lastNotifiedMessage, setLastNotifiedMessage] = useState<string | null>(null); // Track the last notified message
+  const [refreshing, setRefreshing] = useState(false); // For drag-to-refresh
+
   interface Message {
     sender: string;
-    content: string;
+    text: string;
     timestamp: number;
   }
 
-  const { connect, disconnect, messages = [] }: { connect: (url: string) => void; disconnect: () => void; messages: Message[] } = useWebSocket(); // Default messages to an empty array
-
-  // Request notification permissions on component mount
-  useEffect(() => {
-    const requestPermissions = async () => {
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission required', 'Please enable notifications to receive message alerts.');
-      }
-    };
-
-    requestPermissions();
-  }, []);
-
-  // Set selectedChat if recepientId is provided in query params
-  useEffect(() => {
-    if (recepientId) {
-      setSelectedChat(Array.isArray(recepientId) ? recepientId[0] : recepientId);
-    }
-  }, [recepientId]);
+  const { connect, disconnect, messages = [] as Message[], isConnected } = useWebSocket(); // Use WebSocket hook
 
   // Fetch active chats (recipients)
-  useEffect(() => {
-    const fetchRecipients = async () => {
-      try {
-        const response = await fetch(`https://chat.spiritbulb.workers.dev/dm/recipients?userId=${user?.email}`);
-        const data = await response.json();
-        setRecipients(data);
+  const fetchRecipients = async () => {
+    try {
+      const response = await fetch(`https://chat.spiritbulb.workers.dev/dm/recipients?userId=${user?.email}`);
+      const data = await response.json();
+      setRecipients(data);
 
-        // Fetch recipient details for each recipient
-        const details: RecipientDetails = {};
-        for (const recipient of data) {
-          const recipientResponse = await fetch(
-            `https://plate-pals.handler.spiritbulb.com/api/user-data?query=${recipient.recepientId}`
-          );
-          if (recipientResponse.ok) {
-            const recipientData = await recipientResponse.json();
-            if (recipientData.success && recipientData.results && recipientData.results.length > 0) {
-              details[recipient.recepientId] = recipientData.results[0].name; // Store the recipient's name
-            }
+      // Fetch recipient details for each recipient
+      const details: RecipientDetails = {};
+      for (const recipient of data) {
+        const recipientResponse = await fetch(
+          `https://plate-pals.handler.spiritbulb.com/api/user-data?query=${recipient.recepientId}`
+        );
+        if (recipientResponse.ok) {
+          const recipientData = await recipientResponse.json();
+          if (recipientData.success && recipientData.results && recipientData.results.length > 0) {
+            details[recipient.recepientId] = {
+              name: recipientData.results[0].name, // Store the recipient's name
+              image: recipientData.results[0].image, // Store the recipient's image
+            };
           }
         }
-        setRecipientDetails(details);
-      } catch (error) {
-        console.error('Error fetching recipients:', error);
-      } finally {
-        setLoading(false);
       }
-    };
+      setRecipientDetails(details);
+    } catch (error) {
+      console.error('Error fetching recipients:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false); // Stop refreshing
+    }
+  };
 
+  useEffect(() => {
     if (user?.email) {
       fetchRecipients();
     }
   }, [user?.email]);
 
-  // Generate DM channel ID
-  const getDmChannelId = (recepientId: string): string => {
-    return [user?.email, recepientId].sort().join('-');
+  // Handle drag-to-refresh
+  const onRefresh = () => {
+    setRefreshing(true); // Start refreshing
+    fetchRecipients(); // Re-fetch recipients
   };
-
-  // Reopen WebSocket connection when a user starts typing
-  useEffect(() => {
-    if (selectedChat) {
-      const dmChannelId = getDmChannelId(selectedChat);
-      const wsUrl = `wss://chat.spiritbulb.workers.dev/dm/${dmChannelId}/ws?userId=${user?.email}`;
-      connect(wsUrl);
-    }
-
-    return () => {
-      disconnect();
-    };
-  }, [selectedChat]);
-
-  // Listen for new messages and send notifications
-  useEffect(() => {
-    if (messages && messages.length > 0) { // Ensure messages is defined
-      const latestMessage = messages[messages.length - 1];
-      if (!selectedChat || latestMessage.sender !== selectedChat) {
-        setHasNewMessages(true);
-
-        // Send a notification to the status bar
-        Notifications.scheduleNotificationAsync({
-          content: {
-            title: 'New Message',
-            body: `You have a new message from ${recipientDetails[latestMessage.sender] || latestMessage.sender}`,
-            sound: true, // Play a sound
-            data: { sender: latestMessage.sender }, // Optional: Add custom data
-          },
-          trigger: null, // Send immediately
-        });
-      }
-    }
-  }, [messages]);
 
   // Render a single recipient item
   const renderRecipient = ({ item }: { item: Recipient }) => (
@@ -139,14 +94,21 @@ const ChatsPage = () => {
       style={styles.recipientItem}
       onPress={() => setSelectedChat(item.recepientId)}
     >
-      <Text style={styles.recipientText}>
-        {recipientDetails[item.recepientId] || item.recepientId}
-      </Text>
-      {item.latestMessage && (
-        <Text style={styles.timestampText}>
-          Last message: {new Date(item.latestMessage.timestamp).toLocaleString()}
+      {/* Recipient Image */}
+      <Image
+        source={{ uri: recipientDetails[item.recepientId]?.image || 'https://via.placeholder.com/24' }} // Fallback to a placeholder image
+        style={styles.recipientImage}
+      />
+      <View style={styles.recipientInfo}>
+        <Text style={styles.recipientText}>
+          {recipientDetails[item.recepientId]?.name || 'Recipient'}
         </Text>
-      )}
+        {item.latestMessage && (
+          <Text style={styles.timestampText}>
+            {item.latestMessage.text || 'No messages yet'}
+          </Text>
+        )}
+      </View>
     </TouchableOpacity>
   );
 
@@ -156,6 +118,10 @@ const ChatsPage = () => {
         <ActivityIndicator size="large" color="#eab620" />
       </View>
     );
+  }
+
+  function getDmChannelId(selectedChat: string): string {
+    return `${user?.email}-${selectedChat}`;
   }
 
   return (
@@ -182,6 +148,13 @@ const ChatsPage = () => {
           keyExtractor={(item) => item.recepientId}
           renderItem={renderRecipient}
           contentContainerStyle={styles.recipientList}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={['#eab620']} // Customize the refresh indicator color
+            />
+          }
         />
       )}
     </View>
@@ -218,6 +191,8 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   recipientItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 16,
     top: 30,
     marginBottom: 12,
@@ -228,6 +203,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  recipientImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+  },
+  recipientInfo: {
+    flex: 1,
   },
   recipientText: {
     fontSize: 16,
