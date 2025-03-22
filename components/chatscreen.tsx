@@ -6,7 +6,7 @@ import ChatHistory from '@/components/chathistory';
 
 const ChatScreen = () => {
   const { user } = useGlobalContext();
-  const { recepientId } = useLocalSearchParams();
+  const { recepientId } = useLocalSearchParams<{ recepientId: string }>();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,11 +43,17 @@ const ChatScreen = () => {
 
   return (
     <View style={styles.container}>
-      <ChatHistory
-        user={user}
-        recepientId={recepientId}
-        dmChannelId={dmChannelId}
-      />
+      {user && (
+        <ChatHistory
+          user={user}
+          recepientId={recepientId}
+          dmChannelId={dmChannelId || ''}
+          onGoBack={() => {
+            // Define what should happen when onGoBack is called
+            console.log('Go back');
+          }}
+        />
+      )}
     </View>
   );
 };

@@ -11,7 +11,7 @@ interface ChatHistoryProps {
 }
 
 const ChatHistory: React.FC<ChatHistoryProps> = ({ user, recepientId, dmChannelId, onGoBack }) => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<any[]>([]);
   const [inputText, setInputText] = useState('');
   const { sendMessage, isConnected, setOnMessageCallback } = useWebSocket();
 

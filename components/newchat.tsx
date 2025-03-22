@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 
-const NewChat = ({ user, recepientId, onSendFirstMessage }) => {
+interface NewChatProps {
+  user: any;
+  recepientId: string;
+  onSendFirstMessage: (message: { type: string; to: string; text: string; timestamp: number }) => void;
+}
+
+const NewChat: React.FC<NewChatProps> = ({ user, recepientId, onSendFirstMessage }) => {
   const [inputText, setInputText] = useState('');
 
   const handleSendMessage = () => {
