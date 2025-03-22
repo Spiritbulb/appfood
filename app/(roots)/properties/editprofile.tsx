@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     TextInput,
@@ -14,6 +14,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { useGlobalContext } from '@/lib/global-provider';
 import { StatusBar } from 'expo-status-bar';
+import images from '@/constants/images';
 
 // Define the FormData interface
 interface FormData {
@@ -21,6 +22,9 @@ interface FormData {
     name: string;
     user_id: string | undefined;
 }
+
+
+
 
 
 
@@ -33,28 +37,49 @@ const EditProfile: React.FC = () => {
         user_id: user?.email,
     });
     const [selectedImage, setSelectedImage] = useState<string | null>(null); // For preview
+    const [fetchedUser, setFetchedUser] = useState<{ name: string; image: string } | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+
+
+    // Fetch user data from the API
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(
+                    `https://plate-pals.handler.spiritbulb.com/api/user-data?query=${user?.email}`
+                );
+                if (!response.ok) {
+                    throw new Error("Failed to fetch user data");
+                }
+                const data = await response.json();
+
+                // Check if the response contains results
+                if (data.success && data.results && data.results.length > 0) {
+                    const userData = data.results[0]; // Use the first result
+                    setFetchedUser({
+                        name: userData.name,
+                        image: userData.image,
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                setError("Failed to fetch user data");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (user?.email) {
+            fetchUserData();
+        } else {
+            setLoading(false);
+        }
+    }, [user?.email]);
 
     const handleChange = (name: keyof FormData, value: string) => {
         setFormData({ ...formData, [name]: value });
-    };
-
-    const pickImage = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            Alert.alert('Permission required', 'Please allow access to your media library to upload images.');
-            return;
-        }
-
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true, // Allow the user to crop/edit the image
-            aspect: [1, 1], // Aspect ratio for cropping
-            quality: 1, // Image quality (0 to 1)
-        });
-
-        if (!result.canceled) {
-            setSelectedImage(result.assets[0].uri); // Set the selected image URI for preview
-        }
     };
 
     const uploadImage = async (imageUri: string): Promise<string | undefined> => {
@@ -116,32 +141,50 @@ const EditProfile: React.FC = () => {
             console.error('Error uploading image:', error);
             Alert.alert('Error', 'Failed to upload image.');
         }
+
     };
 
-    const handleSubmit = async () => {
-        if (!formData.image || !formData.name) {
-            Alert.alert('Error', 'Please fill in all fields.');
+
+
+
+    const pickImage = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permission required', 'Please allow access to your media library to upload images.');
             return;
         }
 
-        try {
-            const response = await fetch('https://plate-pals.handler.spiritbulb.com/api/edit-profile', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true, // Allow the user to crop/edit the image
+            aspect: [1, 1], // Aspect ratio for cropping
+            quality: 1, // Image quality (0 to 1)
+        });
 
-            if (!response.ok) {
-                throw new Error('Failed to update profile');
-            }
-
-            Alert.alert('Success', 'Profile updated!');
-        } catch (error) {
-            console.error('Error updating profile:', error);
-            Alert.alert('Error', 'Failed to update profile.');
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri); // Set the selected image URI for preview
         }
+
+    };
+
+
+    const handleSubmit = async () => {
+
+        console.log("IMG: ", formData?.image);
+        const response = await fetch('https://plate-pals.handler.spiritbulb.com/api/edit-profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update profile');
+        }
+
+        Alert.alert('Success', 'Profile updated!');
+
     };
 
     return (
@@ -150,13 +193,15 @@ const EditProfile: React.FC = () => {
             style={{ flex: 1 }}
         >
             <StatusBar backgroundColor="#500000" />
+
             <ScrollView
                 contentContainerStyle={styles.container}
                 keyboardShouldPersistTaps="handled" // Dismiss keyboard when tapping outside
             >
-                <TouchableOpacity style={styles.button} onPress={pickImage}>
-                    <Text style={styles.buttonText}>Select Image</Text>
-                </TouchableOpacity>
+                <View>
+                    <Text style={styles.message}>Edit your profile</Text>
+                </View>
+
 
                 {/* Display the selected image for preview */}
                 {selectedImage ? (
@@ -171,24 +216,33 @@ const EditProfile: React.FC = () => {
                         </View>
                     </View>
                 ) : (
-                    <Text style={styles.placeholderText}>No image selected</Text>
+                    <View>
+                        <Image
+                            source={{ uri: fetchedUser?.image }}
+                            style={styles.image}
+                            resizeMode="cover"
+                        />
+                    </View>
                 )}
+
+                <TouchableOpacity style={styles.button} onPress={pickImage}>
+                    <Text style={styles.buttonText}>Select Image</Text>
+                </TouchableOpacity>
 
                 <TextInput
                     style={styles.input}
-                    placeholder="User Name"
+                    placeholder={fetchedUser?.name}
                     value={formData.name}
                     onChangeText={(text) => handleChange('name', text)} // Fixed: Changed 'title' to 'name'
                 />
-
                 <TouchableOpacity style={styles.button} onPress={handleImageUpload}>
                     <Text style={styles.buttonText}>Upload Image</Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>Update Profile</Text>
+                <TouchableOpacity style={styles.postbutton} onPress={handleSubmit}>
+                    <Text style={styles.postbuttonText}>Update Profile</Text>
                 </TouchableOpacity>
             </ScrollView>
+
         </KeyboardAvoidingView>
     );
 };
@@ -196,34 +250,54 @@ const EditProfile: React.FC = () => {
 export default EditProfile;
 
 const styles = StyleSheet.create({
+    message: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#500000',
+        marginBottom: 40,
+        left: 1,
+        top: 4,
+    },
     container: {
         flexGrow: 1,
-        marginTop: 9,
-        padding: 20,
+        padding: 30,
         justifyContent: 'center',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#d4cdbb',
+        marginBottom: 0,
     },
     input: {
         height: 50,
         borderColor: '#ccc',
-        borderWidth: 1,
         marginBottom: 15,
-        paddingHorizontal: 10,
-        borderRadius: 8,
+        padding: 10,
+        borderRadius: 12,
         backgroundColor: '#fff',
+        alignItems: 'center',
     },
     button: {
         width: '100%',
         paddingVertical: 12,
         backgroundColor: '#FFD700',
-        borderRadius: 8,
+        borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
-        elevation: 3,
+        marginBottom: 15,
+    },
+    postbutton: {
+        width: '100%',
+        paddingVertical: 12,
+        backgroundColor: '#500000',
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
         marginBottom: 15,
     },
     buttonText: {
@@ -231,12 +305,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#000',
     },
-    image: {
-        width: 270,
-        height: 320, // Adjust height as needed
-        borderRadius: 8,
-        marginBottom: 15,
-        marginLeft: 35,
+    postbuttonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#fff',
     },
     placeholderText: {
         textAlign: 'center',
@@ -249,16 +321,27 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20,
     },
+    image: {
+        width: '100%',
+        height: 320, // Adjust height as needed
+        borderRadius: 160,
+        borderWidth: 0,
+        marginBottom: 15,
+        marginLeft: 17,
+        position: 'relative',
+        top: 3,
+        right: 18,
+    },
     overlay: {
         position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
+        width: '100%',
+        height: 320,
+        top: 3,
+        right: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.4)', // Slight dark overlay for better visibility
-        borderRadius: 8,
+        backgroundColor: 'rgba(0, 0, 0, 0.17)', // Slight dark overlay for better visibility
+        borderRadius: 18,
     },
     foodTitle: {
         fontSize: 20,
