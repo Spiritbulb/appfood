@@ -56,7 +56,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
       flexDirection: "row",
       alignItems: "center",
       position: "absolute",
-      top: 10,
+      top: 5,
       right: 10,
       backgroundColor: "rgba(255, 255, 255, 0.8)",
       padding: 8,
@@ -66,7 +66,6 @@ export const HomeCards = ({ item, onPress }: Props) => {
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
       shadowRadius: 2,
-      elevation: 2, // For Android
     },
     starIcon: {
       width: 12,
@@ -82,13 +81,13 @@ export const HomeCards = ({ item, onPress }: Props) => {
       flexDirection: "row",
       justifyContent: "space-between",
       position: "absolute",
-      bottom: -20,
+      bottom: -40,
       width: "100%",
       paddingHorizontal: 0,
       paddingBottom: 0,
       borderBottomLeftRadius: 12,
       borderBottomRightRadius: 12,
-      marginTop: 140,
+      marginBottom: 0,
     },
     orderButton: {
       flex: 1,
@@ -102,7 +101,6 @@ export const HomeCards = ({ item, onPress }: Props) => {
       shadowRadius: 4,
       elevation: 3, // For Android
       marginRight: 16,
-      marginBottom: 1,
     },
     orderButtonText: {
       fontSize: 16,
@@ -111,6 +109,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
     },
     favoriteButton: {
       padding: 8,
+      top: 5,
     },
     favoriteIcon: {
       width: 24,
@@ -200,14 +199,14 @@ export const HomeCards = ({ item, onPress }: Props) => {
 
         {/* User Info */}
         <View style={styles.userInfoContainer}>
-            <Image
-              source={{ uri: userImage || 'https://src.spiritbulb.com/plate%20pal.png' }} // Fallback to a placeholder image
-              style={styles.userImage}
-            />
-            <Text style={styles.userName}>
-              {userName || "Food Lover"}
-            </Text>
-          </View>
+          <Image
+            source={{ uri: userImage || 'https://src.spiritbulb.com/plate%20pal.png' }} // Fallback to a placeholder image
+            style={styles.userImage}
+          />
+          <Text style={styles.userName}>
+            {userName || "Food Lover"}
+          </Text>
+        </View>
 
         {/* Food Image */}
         <Image
@@ -226,7 +225,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
             {item?.description || "N/A"}
           </Text>
 
-          
+
 
           {/* Portion  */}
           <View style={{ flexDirection: "row", marginTop: 8 }}>
@@ -309,7 +308,7 @@ export const OrderCards = ({ item, onPress }: Props) => {
       color: '#666',
       marginTop: 4,
     },
-    
+
     portionContainer: {
       flexDirection: 'row',
       alignItems: 'center',
