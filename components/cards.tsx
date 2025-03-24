@@ -29,16 +29,16 @@ export const HomeCards = ({ item, onPress }: Props) => {
       position: "relative",
     },
     foodImage: {
-      width: "90%",
-      height: "60%",
-      borderRadius: 12,
+      width: "100%",
+      height: "65%",
+      borderRadius: 10,
       resizeMode: "contain",
       position: 'relative',
       alignSelf: 'center',
       top: 15,
     },
     foodDetails: {
-      padding: 10,
+      paddingTop: 10,
     },
     foodTitle: {
       fontSize: 18,
@@ -81,11 +81,10 @@ export const HomeCards = ({ item, onPress }: Props) => {
     actionContainer: {
       flexDirection: "row",
       justifyContent: "space-between",
-      alignItems: "center",
       position: "absolute",
       bottom: -20,
       width: "100%",
-      paddingHorizontal: 15,
+      paddingHorizontal: 0,
       paddingBottom: 0,
       borderBottomLeftRadius: 12,
       borderBottomRightRadius: 12,
@@ -121,6 +120,11 @@ export const HomeCards = ({ item, onPress }: Props) => {
       flexDirection: "row",
       alignItems: "center",
       marginTop: 8,
+    },
+    userName: {
+      fontSize: 17,
+      fontWeight: "bold",
+      color: "#333",
     },
     userImage: {
       width: 24,
@@ -194,6 +198,17 @@ export const HomeCards = ({ item, onPress }: Props) => {
           <Text style={styles.ratingText}>{item?.rating || "N/A"}</Text>
         </View>
 
+        {/* User Info */}
+        <View style={styles.userInfoContainer}>
+            <Image
+              source={{ uri: userImage || 'https://src.spiritbulb.com/plate%20pal.png' }} // Fallback to a placeholder image
+              style={styles.userImage}
+            />
+            <Text style={styles.userName}>
+              {userName || "Food Lover"}
+            </Text>
+          </View>
+
         {/* Food Image */}
         <Image
           source={{ uri: item?.image || 'default_image_url' }}
@@ -211,16 +226,7 @@ export const HomeCards = ({ item, onPress }: Props) => {
             {item?.description || "N/A"}
           </Text>
 
-          {/* User Info */}
-          <View style={styles.userInfoContainer}>
-            <Image
-              source={{ uri: userImage || 'https://via.placeholder.com/24' }} // Fallback to a placeholder image
-              style={styles.userImage}
-            />
-            <Text style={styles.foodSubtitle}>
-              {userName || "Food Lover"}
-            </Text>
-          </View>
+          
 
           {/* Portion  */}
           <View style={{ flexDirection: "row", marginTop: 8 }}>

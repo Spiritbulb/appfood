@@ -20,7 +20,7 @@ const ChatScreen = () => {
 
     const fetchChatHistory = async () => {
       try {
-        const response = await fetch(`https://chat.spiritbulb.workers.dev/dm/${dmChannelId}/history`);
+        const response = await fetch(`https://chatter.ws.spiritbulb.com/dm/${dmChannelId}/history`);
         const history = await response.json();
         setMessages(history);
       } catch (error) {

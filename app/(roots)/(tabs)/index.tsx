@@ -350,7 +350,7 @@ const Explore = () => {
               <HomeCards item={item} onPress={() => handleCardPress(item)} />
             </View>
           )}
-          inverted={true}
+          
           onEndReached={fetchMoreData}
           contentContainerStyle={{ gap: 50 }}
           onEndReachedThreshold={0.1}
@@ -384,7 +384,7 @@ const Explore = () => {
               <HomeCards item={item} onPress={() => handleCardPress(item)} />
             </View>
           )}
-          inverted={true}
+         
           onEndReached={fetchMoreData}
           contentContainerStyle={{ gap: 50 }}
           onEndReachedThreshold={0.1}
